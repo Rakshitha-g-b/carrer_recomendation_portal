@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Register - Career Recommender{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h2 class="card-title text-center mb-4">Create Your Account</h2>
+                    
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        {% for field in form %}
+                            <div class="mb-3">
+                                {{ field.label_tag }}
+                                {{ field }} {# This renders the input field widget #}
+                                {% if field.help_text %}
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                {% endif %}
+                                {% for error in field.errors %}
+                                    <div class="invalid-feedback d-block"> {# d-block ensures visibility #}
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+
+                        {% if form.non_field_errors %} {# For errors not specific to a field, e.g., "Passwords didn't match" if not handled by UserCreationForm itself #}
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                {% for error in form.non_field_errors %}
+                                    <p class="mb-0">{{ error }}</p>
+                                {% endfor %}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endif %}
+                        
+                        <button type="submit" class="btn btn-success w-100 mt-3">Register</button>
+                    </form>
+                    <p class="mt-3 text-center">
+                        Already have an account? <a href="{% url 'login' %}">Login here</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
