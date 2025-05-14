@@ -11,22 +11,120 @@ from .models import College, City, State, StreamTag # Ensure these models exist 
 # --- Stream Data ---
 STREAM_INFO = {
     "Science": {
-        "description": "Focuses on Physics, Chemistry, Mathematics/Biology. Prepares for engineering, medical, research fields.",
-        "benefits": ["Develops analytical and problem-solving skills.","Wide range of higher education options (Engineering, Medical, BSc, etc.).","Foundation for research and innovation."],
-        "opportunities": ["Engineer (Software, Mechanical, Civil, etc.)","Doctor, Dentist, Pharmacist","Scientist, Researcher","Architect","Pilot"],
-        "salary_expectation": "Varies widely. Entry-level for engineers/doctors can be moderate to high, growing significantly with experience. Research salaries depend on funding and field."
+        "description": "Focuses on Physics, Chemistry, Mathematics/Biology. Prepares for engineering, medical, research fields, and a wide array of specialized technical and analytical roles.",
+        "benefits": [
+            "Develops strong analytical, problem-solving, and quantitative skills.",
+            "Opens doors to a vast range of higher education options in technical, medical, and research domains.",
+            "Provides a solid foundation for innovation and roles at the cutting edge of technology and discovery."
+        ],
+        "opportunities": [
+            # Common & Well-Known
+            "Engineer (Software, Mechanical, Civil, Electrical, Chemical, Aerospace, etc.)",
+            "Doctor (MBBS, BDS, BAMS, BHMS, etc.)",
+            "Pharmacist",
+            "Architect",
+            "Pilot",
+            "Research Scientist (Physics, Chemistry, Biology, Math, etc.)",
+            "Data Scientist / Analyst (often requires strong math/stats)",
+            # Niche, Specialized, or Less Common
+            "Biomedical Engineer",
+            "Genetic Counselor",
+            "Food Scientist / Technologist",
+            "Forensic Scientist",
+            "Marine Biologist / Oceanographer",
+            "Environmental Scientist / Consultant",
+            "Geologist / Geophysicist",
+            "Meteorologist / Climatologist",
+            "Astrophysicist / Astronomer",
+            "Actuary (requires strong math & statistics)",
+            "Robotics Engineer",
+            "Nanotechnologist",
+            "Bioinformatician",
+            "Epidemiologist",
+            "Patent Lawyer (with a science/engineering degree + law degree)",
+            "Scientific Writer / Medical Writer",
+            "GIS (Geographic Information Systems) Specialist",
+            "UX Researcher (often blends psychology with tech understanding)",
+            "Clinical Research Coordinator",
+            "Medical Physicist"
+        ],
+        "salary_expectation": "Varies widely. Entry-level for core engineering/medical roles can be moderate to high, with significant growth. Specialized and niche roles can also offer very competitive salaries, often depending on demand, expertise, and further qualifications. Research salaries depend on funding and field."
     },
     "Commerce": {
-        "description": "Focuses on Accountancy, Business Studies, Economics. Prepares for careers in finance, business, management.",
-        "benefits": ["Develops understanding of business and financial systems.","Good for aspiring entrepreneurs and managers.","Options like CA, CS, BBA, B.Com."],
-        "opportunities": ["Chartered Accountant (CA)","Company Secretary (CS)","Banker, Financial Analyst","Business Manager, Marketing Manager","Economist"],
-        "salary_expectation": "Good potential. CAs, MBAs from top schools can earn very well. Banking and finance roles offer competitive salaries."
+        "description": "Focuses on Accountancy, Business Studies, Economics, and Mathematics. Prepares for careers in finance, business operations, management, and specialized commercial roles.",
+        "benefits": [
+            "Develops understanding of business operations, financial systems, and economic principles.",
+            "Excellent for aspiring entrepreneurs, managers, and financial professionals.",
+            "Wide range of professional certifications (CA, CS, CFA) and degree options (B.Com, BBA, MBA, M.Com, Economics Hons)."
+        ],
+        "opportunities": [
+            # Common & Well-Known
+            "Chartered Accountant (CA)",
+            "Company Secretary (CS)",
+            "Banker (Retail, Corporate)",
+            "Financial Analyst",
+            "Business Manager / Operations Manager",
+            "Marketing Manager / Sales Manager",
+            "Human Resources Manager",
+            "Economist",
+            # Niche, Specialized, or Less Common
+            "Investment Banker",
+            "Actuary (also linked with Science)",
+            "Forensic Accountant",
+            "Management Consultant (various specializations like Strategy, IT, HR)",
+            "Supply Chain Manager / Logistics Specialist",
+            "Risk Manager / Analyst",
+            "Business Valuator",
+            "Stockbroker / Equity Research Analyst",
+            "Digital Marketing Specialist / SEO/SEM Expert",
+            "E-commerce Manager",
+            "International Business Consultant",
+            "Cost and Management Accountant (CMA)",
+            "Certified Financial Planner (CFP)",
+            "Auditor (Internal/External)",
+            "Business Data Analyst (overlaps with Science)"
+        ],
+        "salary_expectation": "Good potential. Professional certifications like CA, CS, CFA, and MBAs from top schools often lead to high earning potential. Roles in investment banking, consulting, and specialized finance can be very lucrative."
     },
     "Arts/Humanities": {
-        "description": "Focuses on subjects like History, Political Science, Literature, Psychology, Sociology. Prepares for diverse fields including civil services, law, journalism, arts.",
-        "benefits": ["Develops critical thinking, communication, and creative skills.","Broad understanding of society and human behavior.","Pathways to Law, Journalism, Civil Services, Teaching, Design."],
-        "opportunities": ["Lawyer, Judge","Journalist, Editor","Civil Servant (IAS, IPS, etc.)","Teacher, Professor","Psychologist, Counselor","Designer (Graphic, Fashion, etc.)"],
-        "salary_expectation": "Highly variable. Top lawyers, journalists, or successful civil servants earn very well. Other fields might start lower but offer job satisfaction and growth."
+        "description": "Focuses on subjects like History, Political Science, Languages, Literature, Psychology, Sociology, Fine Arts, etc. Prepares for diverse fields including civil services, law, journalism, education, creative industries, and social work.",
+        "benefits": [
+            "Develops strong critical thinking, communication, writing, and creative skills.",
+            "Provides a broad understanding of society, culture, and human behavior.",
+            "Offers diverse pathways to careers in public service, media, education, law, and the arts."
+        ],
+        "opportunities": [
+            # Common & Well-Known
+            "Lawyer / Advocate",
+            "Journalist / Reporter / Editor",
+            "Teacher / Professor (School, College)",
+            "Psychologist (Clinical, Counselling, Organizational)",
+            "Graphic Designer / Web Designer",
+            "Content Writer / Copywriter",
+            "Civil Servant (IAS, IPS, IFS, etc.)",
+            # Niche, Specialized, or Less Common
+            "Archaeologist / Historian / Archivist",
+            "Museum Curator / Art Conservator",
+            "Librarian / Information Scientist",
+            "Urban and Regional Planner",
+            "Sociologist / Anthropologist",
+            "Political Analyst / Psephologist",
+            "Public Relations Specialist",
+            "Social Media Manager / Digital Content Creator",
+            "Scriptwriter (Film, TV, Web)",
+            "Technical Writer",
+            "Translator / Interpreter",
+            "Foreign Language Expert (Diplomacy, Corporate)",
+            "Event Manager",
+            "Fashion Designer / Stylist",
+            "Interior Designer",
+            "Animator / Multimedia Artist",
+            "Art Therapist / Music Therapist / Drama Therapist",
+            "Social Worker / NGO Coordinator",
+            "Policy Analyst / Researcher (Social Sector)",
+            "UX Writer / Content Strategist"
+        ],
+        "salary_expectation": "Highly variable. Top lawyers, successful civil servants, and established professionals in media/design can earn very well. Many roles offer immense job satisfaction and opportunities for societal impact. Salaries in some creative or social sectors might start lower but can grow with experience and reputation."
     }
 }
 # --- END Stream Data ---
