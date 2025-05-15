@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %} {# Make sure to load static if you use static files like images in this template #}
+
+{% block title %}Congratulations!{% endblock %}
+
+{% block content %}
+<div class="container text-center mt-5">
+    {# Optional: Add an image. If you do, make sure the image exists in static/images/ #}
+    {# <img src="{% static 'images/confetti.gif' %}" alt="Congratulations" style="max-width: 200px; margin-bottom: 20px;"> #}
+    
+    <h1>Congratulations, {{ user.first_name|default:user.username }}!</h1>
+    <p class="lead">Your account has been successfully created.</p>
+    <p>We're excited to help you explore your career options.</p>
+    <div class="mt-4">
+        <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg">Go to Dashboard</a>
+        <p class="mt-3">or <a href="{% url 'home' %}">Return to Homepage</a></p>
+    </div>
+</div>
+
+<style>
+    /* Optional: Add some specific styling for this page if needed */
+    .lead {
+        font-size: 1.25rem;
+        font-weight: 300;
+    }
+</style>
+{% endblock %}

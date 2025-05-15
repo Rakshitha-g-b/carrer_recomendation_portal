@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}College Search Results - Career Recommender{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">College Search Results</li>
+        </ol>
+    </nav>
+
+    <h2>College Search Results</h2>
+
+    {# Display the search form again, pre-filled #}
+    <form method="GET" action="{% url 'college_search' %}" class="mb-4 p-4 border rounded bg-light">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label for="{{ form.state.id_for_label }}" class="form-label">{{ form.state.label }}</label>
+                {{ form.state }}
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="{{ form.city.id_for_label }}" class="form-label">{{ form.city.label }}</label>
+                {# This city dropdown won't be dynamically repopulated here without more JS #}
+                {# For simplicity, it shows selected value if any, or just the queryset #}
+                 <select name="city" id="id_city_search_results" class="form-select mb-2">
+                    <option value="">-- Select City --</option>
+                    {# If you want to pre-populate cities based on selected state on this page,
+                       you'd need to pass the cities for the selected state in the context
+                       or make another AJAX call. For now, keeping it simpler. #}
+                    {% if form.city.value %}
+                        <option value="{{ form.city.value }}" selected>{{ form.city.field.queryset.get(id=form.city.value).name }}</option>
+                    {% endif %}
+                 </select>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="{{ form.stream.id_for_label }}" class="form-label">{{ form.stream.label }}</label>
+                {{ form.stream }}
+            </div>
+        </div>
+        <button type="submit" class="btn btn-info">Search Again</button>
+    </form>
+
+    {% if colleges %}
+        <p>Found {{ colleges.count }} institution{{ colleges.count|pluralize }} matching your criteria.</p>
+        <div class="list-group">
+            {% for college in colleges %}
+                <div class="list-group-item list-group-item-action flex-column align-items-start mb-3 shadow-sm">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ college.name }}</h5>
+                        <small class="text-muted">{{ college.city }}</small>
+                    </div>
+                    {% if college.address %}
+                        <p class="mb-1"><small><strong>Address:</strong> {{ college.address }}</small></p>
+                    {% endif %}
+                    <p class="mb-1">
+                        {% if college.website %}
+                            <a href="{{ college.website }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary me-2">Website</a>
+                        {% endif %}
+                        {% if college.contact_email %}
+                            <a href="mailto:{{ college.contact_email }}" class="btn btn-sm btn-outline-secondary me-2">Email</a>
+                        {% endif %}
+                        {% if college.contact_phone %}
+                            <span class="text-muted"><small>Phone: {{ college.contact_phone }}</small></span>
+                        {% endif %}
+                    </p>
+                    {% if college.offered_streams.all %}
+                        <p class="mb-0"><small><strong>Streams:</strong> 
+                        {% for stream_tag in college.offered_streams.all %}
+                            <span class="badge bg-secondary">{{ stream_tag.name }}</span>
+                        {% endfor %}
+                        </small></p>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <div class="alert alert-warning" role="alert">
+                    No colleges found matching your search criteria. Please try a broader search.
+                </div>
+            {% endfor %}
+        </div>
+    {% elif request.GET %} {# If form was submitted but no colleges found and no 'colleges' variable #}
+        <div class="alert alert-warning" role="alert">
+            No colleges found matching your search criteria. Please try a broader search or ensure you have selected valid options.
+        </div>
+    {% endif %}
+
+    {# JavaScript for dynamic city dropdown (similar to dashboard, needed if user changes state on this page) #}
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const stateSelectResults = document.querySelector('#{{ form.state.id_for_label }}'); // Uses the bound form's ID
+        const citySelectResults = document.getElementById('id_city_search_results');
+
+        if (stateSelectResults && citySelectResults) {
+            stateSelectResults.addEventListener('change', function() {
+                const stateId = this.value;
+                citySelectResults.innerHTML = '<option value="">-- Loading Cities --</option>'; 
+
+                if (stateId) {
+                    fetch(`/ajax/load-cities/?state_id=${stateId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            citySelectResults.innerHTML = '<option value="">-- Select City --</option>'; 
+                            data.forEach(function(city) {
+                                const option = document.createElement('option');
+                                option.value = city.id;
+                                option.textContent = city.name;
+                                citySelectResults.appendChild(option);
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error loading cities:', error);
+                            citySelectResults.innerHTML = '<option value="">-- Error Loading --</option>';
+                        });
+                } else {
+                    citySelectResults.innerHTML = '<option value="">-- Select City --</option>';
+                }
+            });
+
+            // Optional: Trigger change on page load if a state is already selected to populate cities
+            // This is useful if the form is re-rendered with previous selections
+            // if (stateSelectResults.value) {
+            //     stateSelectResults.dispatchEvent(new Event('change'));
+            // }
+        }
+    });
+    </script>
+
+</div>
+{% endblock %}
