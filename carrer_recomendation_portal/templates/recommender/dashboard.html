@@ -35,50 +35,48 @@
     </div>
 
     {# --- Render Quiz Questions --- #}
-    <h4 class="mt-4 mb-3">Short Quiz:</h4>
+<h4 class="mt-4 mb-3">Short Quiz:</h4>
 
-    {# Quiz Question 1 #}
-    <div class="mb-3 p-3 border rounded">
-        <p class="fw-bold">{{ form.quiz_q1.label }}</p> {# This is the question itself, keeping it bold #}
-        {% for radio in form.quiz_q1 %}
-        <div class="form-check">
-            {{ radio.tag }}
-            <label class="form-check-label fw-normal" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label> {# <<-- ADDED fw-normal HERE #}
-        </div>
-        {% endfor %}
-        {% if form.quiz_q1.errors %}<div class="invalid-feedback d-block mt-2">{% for error in form.quiz_q1.errors %}{{ error }}{% endfor %}</div>{% endif %}
+{# Quiz Question 1 #}
+<div class="mb-3 p-3 border rounded">
+    <p class="fw-bold">{{ form.quiz_q1.label }}</p> {# <-- This makes the QUESTION text bold (already correct) #}
+    {% for radio in form.quiz_q1 %}
+    <div class="form-check">
+        {{ radio.tag }}
+        <label class="form-check-label fw-normal" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label> {# <<-- ADDED fw-normal to make OPTION text normal #}
     </div>
+    {% endfor %}
+    {% if form.quiz_q1.errors %}<div class="invalid-feedback d-block mt-2">{% for error in form.quiz_q1.errors %}{{ error }}{% endfor %}</div>{% endif %}
+</div>
 
-    {# Quiz Question 2 #}
-    <div class="mb-3 p-3 border rounded">
-        <p class="fw-bold">{{ form.quiz_q2.label }}</p> {# This is the question itself, keeping it bold #}
-        {% for radio in form.quiz_q2 %}
-        <div class="form-check">
-            {{ radio.tag }}
-            <label class="form-check-label fw-normal" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label> {# <<-- ADDED fw-normal HERE #}
-        </div>
-        {% endfor %}
-        {% if form.quiz_q2.errors %}<div class="invalid-feedback d-block mt-2">{% for error in form.quiz_q2.errors %}{{ error }}{% endfor %}</div>{% endif %}
+{# Quiz Question 2 #}
+<div class="mb-3 p-3 border rounded">
+    <p class="fw-bold">{{ form.quiz_q2.label }}</p> {# <-- This makes the QUESTION text bold (already correct) #}
+    {% for radio in form.quiz_q2 %}
+    <div class="form-check">
+        {{ radio.tag }}
+        <label class="form-check-label fw-normal" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label> {# <<-- ADDED fw-normal to make OPTION text normal #}
     </div>
+    {% endfor %}
+    {% if form.quiz_q2.errors %}<div class="invalid-feedback d-block mt-2">{% for error in form.quiz_q2.errors %}{{ error }}{% endfor %}</div>{% endif %}
+</div>
 
-    {# Quiz Question 3 #}
-    <div class="mb-3 p-3 border rounded">
-        <p class="fw-bold">{{ form.quiz_q3.label }}</p> {# This is the question itself, keeping it bold #}
-        {% for radio in form.quiz_q3 %}
-        <div class="form-check">
-            {{ radio.tag }}
-            <label class="form-check-label fw-normal" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label> {# <<-- ADDED fw-normal HERE #}
-        </div>
-        {% endfor %}
-        {% if form.quiz_q3.errors %}<div class="invalid-feedback d-block mt-2">{% for error in form.quiz_q3.errors %}{{ error }}{% endfor %}</div>{% endif %}
+{# Quiz Question 3 #}
+<div class="mb-3 p-3 border rounded">
+    <p class="fw-bold">{{ form.quiz_q3.label }}</p> {# <-- This makes the QUESTION text bold (already correct) #}
+    {% for radio in form.quiz_q3 %}
+    <div class="form-check">
+        {{ radio.tag }}
+        <label class="form-check-label fw-normal" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label> {# <<-- ADDED fw-normal to make OPTION text normal #}
     </div>
-    {# --- End Quiz Questions --- #}
+    {% endfor %}
+    {% if form.quiz_q3.errors %}<div class="invalid-feedback d-block mt-2">{% for error in form.quiz_q3.errors %}{{ error }}{% endfor %}</div>{% endif %}
+</div>
+{# --- End Quiz Questions --- #}
 
-    {% if form.non_field_errors %}<div class="alert alert-danger">{% for error in form.non_field_errors %}<p class="mb-0">{{ error }}</p>{% endfor %}</div>{% endif %}
+{% if form.non_field_errors %}<div class="alert alert-danger">{% for error in form.non_field_errors %}<p class="mb-0">{{ error }}</p>{% endfor %}</div>{% endif %}
 
-    <button type="submit" class="btn btn-primary mt-3">Get Recommendation</button>
-</form> {# Assuming there's an opening <form> tag earlier #}
-
+<button type="submit" class="btn btn-primary mt-3">Get Recommendation</button>
 {# --- Display Recommendation Results --- #}
 {% if recommendation_type %} {# Check if any recommendation process happened #}
     <div class="alert alert-info mt-4">
