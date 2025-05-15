@@ -1,0 +1,50 @@
+{% comment %}
+File: templates/recommender/_stream_details_card.html
+Context variables expected: card_title_prefix, card_stream_name, card_stream_info, card_stream_resources, card_entrance_exams
+{% endcomment %}
+
+{% if card_stream_name and card_stream_info %}
+    <h4 class="mt-4">
+        {% if card_title_prefix %}{{ card_title_prefix }}: {% endif %}<strong>{{ card_stream_name }}</strong>
+    </h4>
+    
+    {# Stream Information Card #}
+    <div class="card mb-3 shadow-sm">
+        <div class="card-header"><h5>About {{ card_stream_name }}</h5></div>
+        <div class="card-body">
+            <p><strong>Description:</strong> {{ card_stream_info.description }}</p>
+            <h5>Benefits:</h5><ul>{% for benefit in card_stream_info.benefits %}<li>{{ benefit }}</li>{% endfor %}</ul>
+            <h5>Opportunities:</h5><ul>{% for opt in card_stream_info.opportunities %}<li>{{ opt }}</li>{% endfor %}</ul>
+            <p><strong>Salary Expectation:</strong> {{ card_stream_info.salary_expectation }}</p>
+        </div>
+    </div>
+
+    {# Resources Card #}
+    {% if card_stream_resources %}
+    <div class="card mb-3 shadow-sm">
+        <div class="card-header"><h5>Helpful Resources for {{ card_stream_name }}</h5></div>
+        <div class="card-body">
+        {% for category, links in card_stream_resources.items %}
+            <h6>{{ category }}</h6><ul>{% for item in links %}<li><a href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.name }}</a></li>{% endfor %}</ul>
+        {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {# Entrance Exams Card --- THIS IS THE SECTION FOR ENTRANCE EXAMS --- #}
+    {% if card_entrance_exams %}
+    <div class="card mb-3 shadow-sm">
+        <div class="card-header"><h5>Key Entrance Exams for {{ card_stream_name }}</h5></div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm table-striped table-hover">
+                    <thead><tr><th>Exam Name</th><th>For Courses</th><th>Eligibility</th><th>Period</th><th>Website</th></tr></thead>
+                    <tbody>{% for exam in card_entrance_exams %}<tr><td>{{ exam.name }}</td><td>{{ exam.for_courses }}</td><td>{{ exam.eligibility }}</td><td>{{ exam.typical_period }}</td><td><a href="{{ exam.website }}" target="_blank" rel="noopener noreferrer">Visit</a></td></tr>{% endfor %}</tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+{% else %}
+    <p class="text-muted">Details for {{ card_stream_name|default:"this stream" }} are not available.</p>
+{% endif %}

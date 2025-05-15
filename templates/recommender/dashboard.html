@@ -5,287 +5,244 @@
 {% block title %}Dashboard - Career Recommender{% endblock %}
 
 {% block content %}
-<div class="mb-4">
-    <h2>Get Your Stream Recommendation</h2>
-    <p>Hello, {{ user.first_name|default:user.username }}! Please provide your details below for a personalized recommendation.</p>
-</div>
+<div class="container mt-4 mb-5">
 
-<form method="post" class="mb-4 needs-validation" novalidate>
-    {% csrf_token %}
-    
-    {# Render percentage field #}
-    <div class="mb-3">
-        <label for="{{ form.percentage.id_for_label }}" class="form-label">{{ form.percentage.label }}</label>
-        {{ form.percentage }} 
-        {% if form.percentage.errors %}<div class="invalid-feedback d-block">{% for error in form.percentage.errors %}{{ error }}{% endfor %}</div>{% endif %}
+    <div class="mb-4">
+        <h2 class="display-6">Get Your Stream Recommendation</h2>
+        <p class="lead">Hello, {{ user.first_name|default:user.username }}! Please provide your details below for a personalized recommendation.</p>
     </div>
 
-    {# Render activity_interest field #}
-    <div class="mb-3">
-        <label for="{{ form.activity_interest.id_for_label }}" class="form-label">{{ form.activity_interest.label }}</label>
-        {{ form.activity_interest }}
-        {% if form.activity_interest.errors %}<div class="invalid-feedback d-block">{% for error in form.activity_interest.errors %}{{ error }}{% endfor %}</div>{% endif %}
-    </div>
-
-    {# Render subject_type_preference field #}
-    <div class="mb-3">
-        <label for="{{ form.subject_type_preference.id_for_label }}" class="form-label">{{ form.subject_type_preference.label }}</label>
-        {{ form.subject_type_preference }}
-        {% if form.subject_type_preference.errors %}<div class="invalid-feedback d-block">{% for error in form.subject_type_preference.errors %}{{ error }}{% endfor %}</div>{% endif %}
-    </div>
-
-    {# --- Render Quiz Questions --- #}
-    <h4 class="mt-4 mb-3">Short Quiz:</h4>
-
-    {# Quiz Question 1 #}
-    <div class="mb-3 p-3 border rounded">
-        <p class="fw-bold">{{ form.quiz_q1.label }}</p>
-        {% for radio in form.quiz_q1 %}
-        <div class="form-check">
-            {{ radio.tag }} 
-            <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
-        </div>
-        {% endfor %}
-        {% if form.quiz_q1.errors %}<div class="invalid-feedback d-block mt-2">{% for error in form.quiz_q1.errors %}{{ error }}{% endfor %}</div>{% endif %}
-    </div>
-
-    {# Quiz Question 2 #}
-    <div class="mb-3 p-3 border rounded">
-        <p class="fw-bold">{{ form.quiz_q2.label }}</p>
-        {% for radio in form.quiz_q2 %}
-        <div class="form-check">
-            {{ radio.tag }}
-            <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
-        </div>
-        {% endfor %}
-        {% if form.quiz_q2.errors %}<div class="invalid-feedback d-block mt-2">{% for error in form.quiz_q2.errors %}{{ error }}{% endfor %}</div>{% endif %}
-    </div>
-
-    {# Quiz Question 3 #}
-    <div class="mb-3 p-3 border rounded">
-        <p class="fw-bold">{{ form.quiz_q3.label }}</p>
-        {% for radio in form.quiz_q3 %}
-        <div class="form-check">
-            {{ radio.tag }}
-            <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
-        </div>
-        {% endfor %}
-        {% if form.quiz_q3.errors %}<div class="invalid-feedback d-block mt-2">{% for error in form.quiz_q3.errors %}{{ error }}{% endfor %}</div>{% endif %}
-    </div>
-    {# --- End Quiz Questions --- #}
-    
-    {% if form.non_field_errors %}<div class="alert alert-danger">{% for error in form.non_field_errors %}<p class="mb-0">{{ error }}</p>{% endfor %}</div>{% endif %}
-    
-    <button type="submit" class="btn btn-primary mt-3">Get Recommendation</button>
-</form>
-
-{# --- Display Recommendation Results --- #}
-{% if recommendation_type %} {# Check if any recommendation process happened #}
-    <div class="alert alert-info mt-4">
-        <h4 class="alert-heading">Recommendation Insights:</h4>
-        <ul>
-            {% for reason in recommendation_reasoning %}
-            <li>{{ reason }}</li>
-            {% endfor %}
-        </ul>
-    </div>
-
-    {% if recommendation_type == "NoClearRecommendation" %}
-        <div class="alert alert-warning mt-4">
-            <h3>Further Exploration Needed</h3>
-            <p>Based on your inputs, there isn't a single standout stream. This is perfectly fine! It might mean your interests are diverse or you're still exploring. We encourage you to look into all streams below or speak with a guidance counselor.</p>
-        </div>
-    {% elif recommendation_type == "MultipleSuggestions" %}
-        <div class="alert alert-primary mt-4">
-            <h3>You have strong potential in multiple areas!</h3>
-            <p>We recommend you primarily explore <strong>{{ primary_recommendation }}</strong>, but also give strong consideration to <strong>{{ secondary_recommendation }}</strong>.</p>
-        </div>
-        {# Display Primary Recommendation #}
-        {% if primary_recommendation and recommended_stream_info_primary %}
-            <h4 class="mt-4">Focus Area 1: {{ primary_recommendation }}</h4>
-            <div class="card mb-3">
-                <div class="card-header"><h4>About {{ primary_recommendation }}</h4></div>
-                <div class="card-body">
-                    <p><strong>Description:</strong> {{ recommended_stream_info_primary.description }}</p>
-                    <h5>Benefits:</h5><ul>{% for benefit in recommended_stream_info_primary.benefits %}<li>{{ benefit }}</li>{% endfor %}</ul>
-                    <h5>Opportunities:</h5><ul>{% for opt in recommended_stream_info_primary.opportunities %}<li>{{ opt }}</li>{% endfor %}</ul>
-                    <p><strong>Salary:</strong> {{ recommended_stream_info_primary.salary_expectation }}</p>
-                </div>
-            </div>
-            {% if recommended_stream_resources_primary %}
-            <div class="card mb-3"><div class="card-header"><h4>Resources for {{ primary_recommendation }}</h4></div>
-                <div class="card-body">
-                {% for category, links in recommended_stream_resources_primary.items %}
-                    <h5>{{ category }}</h5><ul>{% for item in links %}<li><a href="{{ item.url }}" target="_blank">{{ item.name }}</a></li>{% endfor %}</ul>
-                {% endfor %}
-                </div>
-            </div>
-            {% endif %}
-        {% endif %}
-         {# Display Secondary Recommendation #}
-        {% if secondary_recommendation and recommended_stream_info_secondary %}
-            <h4 class="mt-4">Focus Area 2: {{ secondary_recommendation }}</h4>
-            <div class="card mb-3">
-                <div class="card-header"><h4>About {{ secondary_recommendation }}</h4></div>
-                <div class="card-body">
-                    <p><strong>Description:</strong> {{ recommended_stream_info_secondary.description }}</p>
-                    <h5>Benefits:</h5><ul>{% for benefit in recommended_stream_info_secondary.benefits %}<li>{{ benefit }}</li>{% endfor %}</ul>
-                    <h5>Opportunities:</h5><ul>{% for opt in recommended_stream_info_secondary.opportunities %}<li>{{ opt }}</li>{% endfor %}</ul>
-                    <p><strong>Salary:</strong> {{ recommended_stream_info_secondary.salary_expectation }}</p>
-                </div>
-            </div>
-            {% if recommended_stream_resources_secondary %}
-            <div class="card mb-3"><div class="card-header"><h4>Resources for {{ secondary_recommendation }}</h4></div>
-                <div class="card-body">
-                {% for category, links in recommended_stream_resources_secondary.items %}
-                    <h5>{{ category }}</h5><ul>{% for item in links %}<li><a href="{{ item.url }}" target="_blank">{{ item.name }}</a></li>{% endfor %}</ul>
-                {% endfor %}
-                </div>
-            </div>
-            {% endif %}
-        {% endif %}
-
-    {% elif recommended_stream_info %} {# Single, clear recommendation #}
-        <div class="alert alert-success mt-4">
-            <h3>Primary Recommendation: {{ recommendation_type }}</h3> {# recommendation_type will be the stream name here #}
-        </div>
-        <div class="card mb-3">
-            <div class="card-header"><h4>About {{ recommendation_type }}</h4></div>
-            <div class="card-body">
-                <p><strong>Description:</strong> {{ recommended_stream_info.description }}</p>
-                <h5>Benefits:</h5><ul>{% for benefit in recommended_stream_info.benefits %}<li>{{ benefit }}</li>{% endfor %}</ul>
-                <h5>Opportunities:</h5><ul>{% for opportunity in recommended_stream_info.opportunities %}<li>{{ opportunity }}</li>{% endfor %}</ul>
-                <p><strong>Salary:</strong> {{ recommended_stream_info.salary_expectation }}</p>
-            </div>
-        </div>
-        {% if recommended_stream_resources %}
-        <div class="card mb-3"><div class="card-header"><h4>Resources for {{ recommendation_type }}</h4></div>
-            <div class="card-body">
-            {% for category, links in recommended_stream_resources.items %}
-                <h5>{{ category }}</h5><ul>{% for link_item in links %}<li><a href="{{ link_item.url }}" target="_blank">{{ link_item.name }}</a></li>{% endfor %}</ul>
-            {% endfor %}
-            </div>
-        </div>
-        {% endif %}
-    {% endif %} 
-{% endif %} {# End of if recommendation_type (results are available) #}
-
-
-{# ... (previous template code up to the accordion) ... #}
-
-{# "Explore Other Streams" Accordion #}
-{% if all_streams %}
-    <hr class="my-4">
-    <h3>Explore Other Streams:</h3>
-    <div class="accordion" id="accordionOtherStreams">
-        {% for stream_name_key, stream_data_val in all_streams.items %}
-            
-            {% if stream_data_val.show_in_accordion %} {# <<< SIMPLIFIED CONDITION #}
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="heading{{ stream_name_key|slugify }}">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ stream_name_key|slugify }}" aria-expanded="false" aria-controls="collapse{{ stream_name_key|slugify }}">
-                        {{ stream_name_key }}
-                    </button>
-                </h2>
-                <div id="collapse{{ stream_name_key|slugify }}" class="accordion-collapse collapse" aria-labelledby="heading{{ stream_name_key|slugify }}" data-bs-parent="#accordionOtherStreams">
-                    <div class="accordion-body">
-                        <p><strong>Description:</strong> {{ stream_data_val.description }}</p>
-                        <h5>Benefits:</h5><ul>{% for benefit in stream_data_val.benefits %}<li>{{ benefit }}</li>{% endfor %}</ul>
-                        <h5>Opportunities:</h5><ul>{% for opt in stream_data_val.opportunities %}<li>{{ opt }}</li>{% endfor %}</ul>
-                        <p><strong>Salary:</strong> {{ stream_data_val.salary_expectation }}</p>
-                        
-                        {% with other_stream_resources=STREAM_RESOURCES|get_item:stream_name_key %}
-                            {% if other_stream_resources %}
-                                <h6 class="mt-3">Resources:</h6>
-                                {% for category, links in other_stream_resources.items %}
-                                    <strong>{{ category }}:</strong>
-                                    <ul>{% for item in links %}<li><a href="{{ item.url }}" target="_blank">{{ item.name }}</a></li>{% endfor %}</ul>
-                                {% endfor %}
-                            {% endif %}
-                        {% endwith %}
-                    </div>
-                </div>
-            </div>
-            {% endif %} {# End of if stream_data_val.show_in_accordion #}
-        {% endfor %}
-    </div>
-{% endif %} {# End of if all_streams #}
-
-{% endblock %}
-{# ... (existing dashboard content) ... #}
-
-<hr class="my-5">
-
-<div class="college-search-section mt-5">
-    <h2>Find Colleges & Institutes</h2>
-    <p>Search for institutions based on your preferred stream and location.</p>
-    
-    <form method="GET" action="{% url 'college_search' %}" class="mb-4 p-4 border rounded bg-light">
-        {# No csrf_token needed for GET forms #}
+    {# --- Recommendation Input Form --- #}
+    <form method="post" action="{% url 'dashboard' %}" class="mb-5 p-4 border rounded bg-light shadow-sm needs-validation" novalidate>
+        {% csrf_token %}
+        
         <div class="row">
             <div class="col-md-4 mb-3">
-                <label for="{{ college_search_form.state.id_for_label }}" class="form-label">{{ college_search_form.state.label }}</label>
-                {{ college_search_form.state }}
-                {% if college_search_form.state.errors %}
-                    <div class="invalid-feedback d-block">{% for error in college_search_form.state.errors %}{{ error }}{% endfor %}</div>
-                {% endif %}
+                <label for="{{ form.percentage.id_for_label }}" class="form-label">{{ form.percentage.label }}</label>
+                {{ form.percentage }} 
+                {% if form.percentage.errors %}<div class="invalid-feedback d-block">{% for error in form.percentage.errors %}{{ error }}{% endfor %}</div>{% endif %}
             </div>
             <div class="col-md-4 mb-3">
-                <label for="{{ college_search_form.city.id_for_label }}" class="form-label">{{ college_search_form.city.label }}</label>
-                {# City dropdown will be populated by JS or needs manual input if no JS #}
-                <select name="city" id="id_city_search" class="form-select mb-2">
-                    <option value="">-- Select City --</option>
-                    {# Options will be added by JavaScript #}
-                </select>
-                {% if college_search_form.city.errors %}
-                    <div class="invalid-feedback d-block">{% for error in college_search_form.city.errors %}{{ error }}{% endfor %}</div>
-                {% endif %}
+                <label for="{{ form.activity_interest.id_for_label }}" class="form-label">{{ form.activity_interest.label }}</label>
+                {{ form.activity_interest }}
+                {% if form.activity_interest.errors %}<div class="invalid-feedback d-block">{% for error in form.activity_interest.errors %}{{ error }}{% endfor %}</div>{% endif %}
             </div>
             <div class="col-md-4 mb-3">
-                <label for="{{ college_search_form.stream.id_for_label }}" class="form-label">{{ college_search_form.stream.label }}</label>
-                {{ college_search_form.stream }}
-                {% if college_search_form.stream.errors %}
-                    <div class="invalid-feedback d-block">{% for error in college_search_form.stream.errors %}{{ error }}{% endfor %}</div>
-                {% endif %}
+                <label for="{{ form.subject_type_preference.id_for_label }}" class="form-label">{{ form.subject_type_preference.label }}</label>
+                {{ form.subject_type_preference }}
+                {% if form.subject_type_preference.errors %}<div class="invalid-feedback d-block">{% for error in form.subject_type_preference.errors %}{{ error }}{% endfor %}</div>{% endif %}
             </div>
         </div>
-        <button type="submit" class="btn btn-info">Search Colleges</button>
+
+        <h4 class="mt-4 mb-3">Short Quiz:</h4>
+        <div class="row">
+            <div class="col-md-4 mb-3 p-3 border rounded me-md-3 flex-fill">
+                <p class="fw-bold mb-2">{{ form.quiz_q1.label }}</p>
+                {% for radio in form.quiz_q1 %}<div class="form-check">{{ radio.tag }} <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label></div>{% endfor %}
+                {% if form.quiz_q1.errors %}<div class="invalid-feedback d-block mt-2">{% for error in form.quiz_q1.errors %}{{ error }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4 mb-3 p-3 border rounded me-md-3 flex-fill">
+                <p class="fw-bold mb-2">{{ form.quiz_q2.label }}</p>
+                {% for radio in form.quiz_q2 %}<div class="form-check">{{ radio.tag }} <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label></div>{% endfor %}
+                {% if form.quiz_q2.errors %}<div class="invalid-feedback d-block mt-2">{% for error in form.quiz_q2.errors %}{{ error }}{% endfor %}</div>{% endif %}
+            </div>
+            <div class="col-md-4 mb-3 p-3 border rounded flex-fill">
+                <p class="fw-bold mb-2">{{ form.quiz_q3.label }}</p>
+                {% for radio in form.quiz_q3 %}<div class="form-check">{{ radio.tag }} <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label></div>{% endfor %}
+                {% if form.quiz_q3.errors %}<div class="invalid-feedback d-block mt-2">{% for error in form.quiz_q3.errors %}{{ error }}{% endfor %}</div>{% endif %}
+            </div>
+        </div>
+        
+        {% if form.non_field_errors %}<div class="alert alert-danger mt-3">{% for error in form.non_field_errors %}<p class="mb-0">{{ error }}</p>{% endfor %}</div>{% endif %}
+        
+        <button type="submit" class="btn btn-primary w-100 mt-4 py-2">Get Recommendation</button>
     </form>
-</div>
 
-{# JavaScript for dynamic city dropdown (place before </body> in base.html or in a static JS file) #}
+    {# --- Display Recommendation Results --- #}
+    {% if recommendation_type %} 
+        <div class="results-section mt-5 p-4 border rounded shadow-sm bg-white">
+            <h3 class="mb-3">Your Personalized Guidance</h3>
+            <div class="alert alert-info">
+                <h4 class="alert-heading">Recommendation Insights:</h4>
+                <ul class="mb-0">
+                    {% for reason in recommendation_reasoning %}
+                    <li>{{ reason }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            {% if recommendation_type == "NoClearRecommendation" %}
+                <div class="alert alert-warning"><h4 class="alert-heading">Further Exploration Needed</h4><p>Based on your inputs, there isn't a single standout stream. This is perfectly fine! We encourage you to look into all streams below or speak with a guidance counselor.</p></div>
+            
+            {% elif recommendation_type == "MultipleSuggestions" %}
+                <div class="alert alert-primary"><h4 class="alert-heading">You have strong potential in multiple areas!</h4><p>We recommend you primarily explore <strong>{{ primary_recommendation }}</strong>, but also give strong consideration to <strong>{{ secondary_recommendation }}</strong>.</p></div>
+                
+                {# Use include for Primary Recommendation #}
+                {% include "recommender/_stream_details_card.html" with card_title_prefix="Focus Area 1" card_stream_name=primary_recommendation card_stream_info=recommended_stream_info_primary card_stream_resources=recommended_stream_resources_primary card_entrance_exams=relevant_entrance_exams_primary %}
+                
+                {# Use include for Secondary Recommendation #}
+                {% include "recommender/_stream_details_card.html" with card_title_prefix="Focus Area 2" card_stream_name=secondary_recommendation card_stream_info=recommended_stream_info_secondary card_stream_resources=recommended_stream_resources_secondary card_entrance_exams=relevant_entrance_exams_secondary %}
+
+            {% elif recommended_stream_info %} {# Single, clear recommendation (recommendation_type will be the stream name) #}
+                <div class="alert alert-success"><h4 class="alert-heading">Primary Recommendation: {{ recommendation_type }}</h4></div>
+                
+                {# Use include for Single Recommendation #}
+                {% include "recommender/_stream_details_card.html" with card_stream_name=recommendation_type card_stream_info=recommended_stream_info card_stream_resources=recommended_stream_resources card_entrance_exams=relevant_entrance_exams %}
+            {% endif %} 
+        </div> 
+    {% endif %} 
+
+
+    {# --- Display General Financial Aid Information (Shown if any recommendation process happened OR always if data exists) --- #}
+    {% if FINANCIAL_AID_INFO %} {# Changed condition to always show if data exists, or use recommendation_type if you prefer #}
+    <div class="financial-aid-section mt-5 p-4 border rounded shadow-sm bg-white">
+        <h3 class="mb-3">Financial Aid & Scholarship Resources (General)</h3>
+        {% for category, items in FINANCIAL_AID_INFO.items %}
+            <h5>{{ category }}</h5>
+            <ul class="list-unstyled mb-3">
+                {% for item in items %}
+                    <li class="mb-2">
+                        <strong>{{ item.name }}:</strong> {{ item.description }}
+                        {% if item.url != "#" and item.url %} {# Check if URL is not just "#" and exists #}
+                            <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer" class="ms-2 small">(Learn More)</a>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+
+    {# --- College Search Form Section --- #}
+    <hr class="my-5">
+    <div class="college-search-section mt-4 p-4 border rounded shadow-sm bg-white">
+        <h3 class="mb-3">Find Colleges & Institutes</h3>
+        <p class="mb-3">Search for institutions based on your preferred stream and location.</p>
+        
+        {% if college_search_form %}
+            <form method="GET" action="{% url 'college_search' %}" class="p-3 border rounded bg-light">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="{{ college_search_form.state.id_for_label }}" class="form-label">{{ college_search_form.state.label }}</label>
+                        {{ college_search_form.state }}
+                        {% if college_search_form.state.errors %}<div class="invalid-feedback d-block">{% for error in college_search_form.state.errors %}{{ error }}{% endfor %}</div>{% endif %}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="id_city_search" class="form-label">City</label> 
+                        <select name="city" id="id_city_search" class="form-select">
+                            <option value="">-- Select State First --</option>
+                        </select>
+                        {% if college_search_form.city.errors %}<div class="invalid-feedback d-block">{% for error in college_search_form.city.errors %}{{ error }}{% endfor %}</div>{% endif %}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="{{ college_search_form.stream.id_for_label }}" class="form-label">{{ college_search_form.stream.label }}</label>
+                        {{ college_search_form.stream }}
+                        {% if college_search_form.stream.errors %}<div class="invalid-feedback d-block">{% for error in college_search_form.stream.errors %}{{ error }}{% endfor %}</div>{% endif %}
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-info w-100 mt-2 py-2">Search Colleges</button>
+            </form>
+        {% else %}
+            <p class="text-danger fw-bold">DEBUG (HTML): College search form is not available in the context.</p>
+        {% endif %}
+    </div>
+
+    {# --- "Explore Other Streams" Accordion --- #}
+    {% if all_streams %}
+        <hr class="my-5">
+        <h3 class="mb-3">Explore Other Streams</h3>
+        <div class="accordion" id="accordionOtherStreams">
+            {% for stream_name_key, stream_data_val in all_streams.items %}
+                {% if stream_data_val.show_in_accordion %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingAccordion{{ stream_name_key|slugify }}">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAccordion{{ stream_name_key|slugify }}" aria-expanded="false" aria-controls="collapseAccordion{{ stream_name_key|slugify }}">
+                            {{ stream_name_key }}
+                        </button>
+                    </h2>
+                    <div id="collapseAccordion{{ stream_name_key|slugify }}" class="accordion-collapse collapse" aria-labelledby="headingAccordion{{ stream_name_key|slugify }}" data-bs-parent="#accordionOtherStreams">
+                        <div class="accordion-body">
+                            <p><strong>Description:</strong> {{ stream_data_val.description }}</p>
+                            <h5>Benefits:</h5><ul>{% for benefit in stream_data_val.benefits %}<li>{{ benefit }}</li>{% endfor %}</ul>
+                            <h5>Opportunities:</h5><ul>{% for opt in stream_data_val.opportunities %}<li>{{ opt }}</li>{% endfor %}</ul>
+                            <p><strong>Salary Expectation:</strong> {{ stream_data_val.salary_expectation }}</p>
+                            
+                            {% with other_stream_resources=STREAM_RESOURCES|get_item:stream_name_key %}
+                                {% if other_stream_resources %}
+                                    <h6 class="mt-3">Resources for {{stream_name_key}}:</h6>
+                                    {% for category, links in other_stream_resources.items %}
+                                        <strong>{{ category }}:</strong>
+                                        <ul class="list-unstyled mb-2">
+                                        {% for item in links %}<li><a href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.name }}</a></li>{% endfor %}
+                                        </ul>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+</div> {# End of main container #}
+{% endblock %}
+
+{% block scripts %}
+{# JavaScript for dynamic city dropdown #}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const stateSelect = document.getElementById('id_state_search');
-        const citySelect = document.getElementById('id_city_search');
+document.addEventListener('DOMContentLoaded', function() {
+    const stateSelect = document.getElementById('{{ college_search_form.state.id_for_label }}'); 
+    const citySelect = document.getElementById('id_city_search');
 
-        if (stateSelect && citySelect) {
-            stateSelect.addEventListener('change', function() {
-                const stateId = this.value;
-                citySelect.innerHTML = '<option value="">-- Loading Cities --</option>'; // Clear previous cities
+    if (stateSelect && citySelect) {
+        stateSelect.addEventListener('change', function() {
+            const stateId = this.value;
+            citySelect.innerHTML = '<option value="">-- Loading Cities --</option>'; 
 
-                if (stateId) {
-                    fetch(`/ajax/load-cities/?state_id=${stateId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            citySelect.innerHTML = '<option value="">-- Select City --</option>'; // Reset placeholder
+            if (stateId) {
+                fetch(`/ajax/load-cities/?state_id=${stateId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        citySelect.innerHTML = '<option value="">-- Select City --</option>'; 
+                        if (data && Array.isArray(data) && data.length > 0) {
                             data.forEach(function(city) {
                                 const option = document.createElement('option');
                                 option.value = city.id;
                                 option.textContent = city.name;
                                 citySelect.appendChild(option);
                             });
-                        })
-                        .catch(error => {
-                            console.error('Error loading cities:', error);
-                            citySelect.innerHTML = '<option value="">-- Error Loading --</option>';
-                        });
-                } else {
-                    citySelect.innerHTML = '<option value="">-- Select City --</option>';
-                }
-            });
+                        } else if (data && Array.isArray(data) && data.length === 0) {
+                             citySelect.innerHTML = '<option value="">-- No cities found for this state --</option>';
+                        } else {
+                            console.warn("Received unexpected data format for cities:", data);
+                            citySelect.innerHTML = '<option value="">-- Error: Invalid city data --</option>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading cities:', error);
+                        citySelect.innerHTML = '<option value="">-- Error Loading Cities --</option>';
+                    });
+            } else {
+                citySelect.innerHTML = '<option value="">-- Select State First --</option>';
+            }
+        });
+        // If a state is already selected (e.g. form re-submission with errors, or when returning to page), 
+        // trigger change to load cities for that state if stateSelect has a value.
+        if (stateSelect.value) {
+            stateSelect.dispatchEvent(new Event('change'));
         }
-    });
+    } else {
+        if (!stateSelect) console.warn("DEBUG (JS): State select element ('{{ college_search_form.state.id_for_label }}') not found.");
+        if (!citySelect) console.warn("DEBUG (JS): City select element ('id_city_search') not found.");
+    }
+});
 </script>
-
-{# ... (rest of dashboard.html, like "Explore Other Streams" accordion) ... #}
+{% endblock %}
