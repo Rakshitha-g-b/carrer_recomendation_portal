@@ -47,8 +47,7 @@ STREAM_INFO = {
             "UX Researcher (often blends psychology with tech understanding)",
             "Clinical Research Coordinator",
             "Medical Physicist"
-        ],
-        "salary_expectation": "Varies widely. Entry-level for core engineering/medical roles can be moderate to high, with significant growth. Specialized and niche roles can also offer very competitive salaries, often depending on demand, expertise, and further qualifications. Research salaries depend on funding and field."
+        ]
     },
     "Commerce": {
         "description": "Focuses on Accountancy, Business Studies, Economics, and Mathematics. Prepares for careers in finance, business operations, management, and specialized commercial roles.",
@@ -83,8 +82,7 @@ STREAM_INFO = {
             "Certified Financial Planner (CFP)",
             "Auditor (Internal/External)",
             "Business Data Analyst (overlaps with Science)"
-        ],
-        "salary_expectation": "Good potential. Professional certifications like CA, CS, CFA, and MBAs from top schools often lead to high earning potential. Roles in investment banking, consulting, and specialized finance can be very lucrative."
+        ]
     },
     "Arts/Humanities": {
         "description": "Focuses on subjects like History, Political Science, Languages, Literature, Psychology, Sociology, Fine Arts, etc. Prepares for diverse fields including civil services, law, journalism, education, creative industries, and social work.",
@@ -123,8 +121,8 @@ STREAM_INFO = {
             "Social Worker / NGO Coordinator",
             "Policy Analyst / Researcher (Social Sector)",
             "UX Writer / Content Strategist"
-        ],
-        "salary_expectation": "Highly variable. Top lawyers, successful civil servants, and established professionals in media/design can earn very well. Many roles offer immense job satisfaction and opportunities for societal impact. Salaries in some creative or social sectors might start lower but can grow with experience and reputation."
+        ]
+       
     }
 }
 # --- END Stream Data ---
