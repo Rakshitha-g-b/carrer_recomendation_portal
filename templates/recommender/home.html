@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Welcome - Career Recommender{% endblock %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+    <div class="jumbotron">
+        <h1 class="display-4">Career Guidance System</h1>
+        <p class="lead">Find the right stream for your future after 10th grade.</p>
+        <hr class="my-4">
+        <p>To get started and receive personalized recommendations, please log in or create an account.</p>
+        {% if user.is_authenticated %}
+            <p>Welcome back, {{ user.first_name|default:user.username }}!</p>
+            <a class="btn btn-primary btn-lg mt-3" href="{% url 'dashboard' %}" role="button">Go to Your Dashboard</a>
+            <p class="mt-2"><a href="{% url 'logout' %}">Logout</a></p>
+        {% else %}
+            <a class="btn btn-success btn-lg mt-3 me-2" href="{% url 'login' %}" role="button">Login</a>
+            <a class="btn btn-info btn-lg mt-3" href="{% url 'register' %}" role="button">Register</a>
+        {% endif %}
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-md-4">
+            <h4>Science Stream</h4>
+            <p>Explore opportunities in engineering, medicine, research, and more.</p>
+        </div>
+        <div class="col-md-4">
+            <h4>Commerce Stream</h4>
+            <p>Dive into the world of business, finance, accounting, and management.</p>
+        </div>
+        <div class="col-md-4">
+            <h4>Arts/Humanities Stream</h4>
+            <p>Discover careers in law, journalism, civil services, design, and the arts.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
