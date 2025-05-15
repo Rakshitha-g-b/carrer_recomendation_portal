@@ -109,7 +109,7 @@
                     <p><strong>Description:</strong> {{ recommended_stream_info_primary.description }}</p>
                     <h5>Benefits:</h5><ul>{% for benefit in recommended_stream_info_primary.benefits %}<li>{{ benefit }}</li>{% endfor %}</ul>
                     <h5>Opportunities:</h5><ul>{% for opt in recommended_stream_info_primary.opportunities %}<li>{{ opt }}</li>{% endfor %}</ul>
-                    <p><strong>Salary:</strong> {{ recommended_stream_info_primary.salary_expectation }}</p>
+                   
                 </div>
             </div>
             {% if recommended_stream_resources_primary %}
@@ -131,7 +131,7 @@
                     <p><strong>Description:</strong> {{ recommended_stream_info_secondary.description }}</p>
                     <h5>Benefits:</h5><ul>{% for benefit in recommended_stream_info_secondary.benefits %}<li>{{ benefit }}</li>{% endfor %}</ul>
                     <h5>Opportunities:</h5><ul>{% for opt in recommended_stream_info_secondary.opportunities %}<li>{{ opt }}</li>{% endfor %}</ul>
-                    <p><strong>Salary:</strong> {{ recommended_stream_info_secondary.salary_expectation }}</p>
+                    
                 </div>
             </div>
             {% if recommended_stream_resources_secondary %}
@@ -155,7 +155,7 @@
                 <p><strong>Description:</strong> {{ recommended_stream_info.description }}</p>
                 <h5>Benefits:</h5><ul>{% for benefit in recommended_stream_info.benefits %}<li>{{ benefit }}</li>{% endfor %}</ul>
                 <h5>Opportunities:</h5><ul>{% for opportunity in recommended_stream_info.opportunities %}<li>{{ opportunity }}</li>{% endfor %}</ul>
-                <p><strong>Salary:</strong> {{ recommended_stream_info.salary_expectation }}</p>
+                
             </div>
         </div>
         {% if recommended_stream_resources %}
@@ -192,7 +192,7 @@
                         <p><strong>Description:</strong> {{ stream_data_val.description }}</p>
                         <h5>Benefits:</h5><ul>{% for benefit in stream_data_val.benefits %}<li>{{ benefit }}</li>{% endfor %}</ul>
                         <h5>Opportunities:</h5><ul>{% for opt in stream_data_val.opportunities %}<li>{{ opt }}</li>{% endfor %}</ul>
-                        <p><strong>Salary:</strong> {{ stream_data_val.salary_expectation }}</p>
+                       
                         
                         {% with other_stream_resources=STREAM_RESOURCES|get_item:stream_name_key %}
                             {% if other_stream_resources %}
