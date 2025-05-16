@@ -3,7 +3,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-#from .models import State, City, StreamTag # <<< ADD THIS IMPORT LINE
+from .models import State, City, StreamTag # <<< ADD THIS IMPORT LINE
 
 class CustomUserCreationForm(UserCreationForm):
     # ... (your existing CustomUserCreationForm code) ...
@@ -101,4 +101,21 @@ class RecommendationInputForm(forms.Form):
     )
 
 
-
+class CollegeSearchForm(forms.Form):
+    state = forms.ModelChoiceField(
+        queryset=State.objects.all().order_by('name'),
+        empty_label="-- Select State --",
+        widget=forms.Select(attrs={'class': 'form-select mb-2', 'id': 'id_state_search'})
+    )
+    city = forms.ModelChoiceField( 
+        queryset=City.objects.none(), # queryset will be updated by JS based on state selection
+        empty_label="-- Select City (after state) --",
+        required=False, 
+        widget=forms.Select(attrs={'class': 'form-select mb-2', 'id': 'id_city_search'})
+    )
+    stream = forms.ModelChoiceField(
+        queryset=StreamTag.objects.all().order_by('name'),
+        empty_label="-- Select Stream (Optional) --",
+        required=False, 
+        widget=forms.Select(attrs={'class': 'form-select mb-3'})
+    )

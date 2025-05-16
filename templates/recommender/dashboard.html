@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load recommender_extras %} 
+{% load recommender_extras %}  {# For the get_item filter #}
 {% load static %}
 
 {% block title %}Dashboard - Career Recommender{% endblock %}
@@ -77,24 +77,21 @@
             {% elif recommendation_type == "MultipleSuggestions" %}
                 <div class="alert alert-primary"><h4 class="alert-heading">You have strong potential in multiple areas!</h4><p>We recommend you primarily explore <strong>{{ primary_recommendation }}</strong>, but also give strong consideration to <strong>{{ secondary_recommendation }}</strong>.</p></div>
                 
-                {# Use include for Primary Recommendation #}
                 {% include "recommender/_stream_details_card.html" with card_title_prefix="Focus Area 1" card_stream_name=primary_recommendation card_stream_info=recommended_stream_info_primary card_stream_resources=recommended_stream_resources_primary card_entrance_exams=relevant_entrance_exams_primary %}
                 
-                {# Use include for Secondary Recommendation #}
                 {% include "recommender/_stream_details_card.html" with card_title_prefix="Focus Area 2" card_stream_name=secondary_recommendation card_stream_info=recommended_stream_info_secondary card_stream_resources=recommended_stream_resources_secondary card_entrance_exams=relevant_entrance_exams_secondary %}
 
             {% elif recommended_stream_info %} {# Single, clear recommendation (recommendation_type will be the stream name) #}
                 <div class="alert alert-success"><h4 class="alert-heading">Primary Recommendation: {{ recommendation_type }}</h4></div>
                 
-                {# Use include for Single Recommendation #}
                 {% include "recommender/_stream_details_card.html" with card_stream_name=recommendation_type card_stream_info=recommended_stream_info card_stream_resources=recommended_stream_resources card_entrance_exams=relevant_entrance_exams %}
             {% endif %} 
         </div> 
     {% endif %} 
 
 
-    {# --- Display General Financial Aid Information (Shown if any recommendation process happened OR always if data exists) --- #}
-    {% if FINANCIAL_AID_INFO %} {# Changed condition to always show if data exists, or use recommendation_type if you prefer #}
+    {# --- Display General Financial Aid Information --- #}
+    {% if FINANCIAL_AID_INFO %} 
     <div class="financial-aid-section mt-5 p-4 border rounded shadow-sm bg-white">
         <h3 class="mb-3">Financial Aid & Scholarship Resources (General)</h3>
         {% for category, items in FINANCIAL_AID_INFO.items %}
@@ -103,7 +100,7 @@
                 {% for item in items %}
                     <li class="mb-2">
                         <strong>{{ item.name }}:</strong> {{ item.description }}
-                        {% if item.url != "#" and item.url %} {# Check if URL is not just "#" and exists #}
+                        {% if item.url != "#" and item.url %}
                             <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer" class="ms-2 small">(Learn More)</a>
                         {% endif %}
                     </li>
@@ -114,43 +111,13 @@
     {% endif %}
 
 
-    {# --- College Search Form Section --- #}
-    <hr class="my-5">
-    <div class="college-search-section mt-4 p-4 border rounded shadow-sm bg-white">
-        <h3 class="mb-3">Find Colleges & Institutes</h3>
-        <p class="mb-3">Search for institutions based on your preferred stream and location.</p>
-        
-        {% if college_search_form %}
-            <form method="GET" action="{% url 'college_search' %}" class="p-3 border rounded bg-light">
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <label for="{{ college_search_form.state.id_for_label }}" class="form-label">{{ college_search_form.state.label }}</label>
-                        {{ college_search_form.state }}
-                        {% if college_search_form.state.errors %}<div class="invalid-feedback d-block">{% for error in college_search_form.state.errors %}{{ error }}{% endfor %}</div>{% endif %}
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label for="id_city_search" class="form-label">City</label> 
-                        <select name="city" id="id_city_search" class="form-select">
-                            <option value="">-- Select State First --</option>
-                        </select>
-                        {% if college_search_form.city.errors %}<div class="invalid-feedback d-block">{% for error in college_search_form.city.errors %}{{ error }}{% endfor %}</div>{% endif %}
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label for="{{ college_search_form.stream.id_for_label }}" class="form-label">{{ college_search_form.stream.label }}</label>
-                        {{ college_search_form.stream }}
-                        {% if college_search_form.stream.errors %}<div class="invalid-feedback d-block">{% for error in college_search_form.stream.errors %}{{ error }}{% endfor %}</div>{% endif %}
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-info w-100 mt-2 py-2">Search Colleges</button>
-            </form>
-        {% else %}
-            <p class="text-danger fw-bold">DEBUG (HTML): College search form is not available in the context.</p>
-        {% endif %}
-    </div>
+    {# --- College Search Form Section - ENTIRELY REMOVED --- #}
+    {# The <hr class="my-5"> and the <div class="college-search-section ..."> ... </div> block that was here has been deleted. #}
+
 
     {# --- "Explore Other Streams" Accordion --- #}
     {% if all_streams %}
-        <hr class="my-5">
+        <hr class="my-5"> {# This hr might now be directly after Financial Aid, or you can adjust its placement #}
         <h3 class="mb-3">Explore Other Streams</h3>
         <div class="accordion" id="accordionOtherStreams">
             {% for stream_name_key, stream_data_val in all_streams.items %}
@@ -191,58 +158,5 @@
 {% endblock %}
 
 {% block scripts %}
-{# JavaScript for dynamic city dropdown #}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const stateSelect = document.getElementById('{{ college_search_form.state.id_for_label }}'); 
-    const citySelect = document.getElementById('id_city_search');
-
-    if (stateSelect && citySelect) {
-        stateSelect.addEventListener('change', function() {
-            const stateId = this.value;
-            citySelect.innerHTML = '<option value="">-- Loading Cities --</option>'; 
-
-            if (stateId) {
-                fetch(`/ajax/load-cities/?state_id=${stateId}`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        citySelect.innerHTML = '<option value="">-- Select City --</option>'; 
-                        if (data && Array.isArray(data) && data.length > 0) {
-                            data.forEach(function(city) {
-                                const option = document.createElement('option');
-                                option.value = city.id;
-                                option.textContent = city.name;
-                                citySelect.appendChild(option);
-                            });
-                        } else if (data && Array.isArray(data) && data.length === 0) {
-                             citySelect.innerHTML = '<option value="">-- No cities found for this state --</option>';
-                        } else {
-                            console.warn("Received unexpected data format for cities:", data);
-                            citySelect.innerHTML = '<option value="">-- Error: Invalid city data --</option>';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error loading cities:', error);
-                        citySelect.innerHTML = '<option value="">-- Error Loading Cities --</option>';
-                    });
-            } else {
-                citySelect.innerHTML = '<option value="">-- Select State First --</option>';
-            }
-        });
-        // If a state is already selected (e.g. form re-submission with errors, or when returning to page), 
-        // trigger change to load cities for that state if stateSelect has a value.
-        if (stateSelect.value) {
-            stateSelect.dispatchEvent(new Event('change'));
-        }
-    } else {
-        if (!stateSelect) console.warn("DEBUG (JS): State select element ('{{ college_search_form.state.id_for_label }}') not found.");
-        if (!citySelect) console.warn("DEBUG (JS): City select element ('id_city_search') not found.");
-    }
-});
-</script>
+{# JavaScript for dynamic city dropdown - REMOVED #}
 {% endblock %}

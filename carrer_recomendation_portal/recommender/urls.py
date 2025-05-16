@@ -10,7 +10,6 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('dashboard/', views.dashboard_view, name='dashboard'),
     path('congratulations/', views.congratulations_view, name='congratulations'),
-    # The college search URLs should have been removed:
-    # path('college-search/', views.college_search_view, name='college_search'),
-    # path('ajax/load-cities/', views.load_cities, name='ajax_load_cities'), 
+    path('college-search/', views.college_search_view, name='college_search'), # NEW
+    path('ajax/load-cities/', views.load_cities, name='ajax_load_cities'), # NEW for dynamic cities
 ]
