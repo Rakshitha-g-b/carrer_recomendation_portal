@@ -7,156 +7,207 @@
 {% block content %}
 <div class="container mt-4 mb-5">
 
-    <div class="mb-4">
-        <h2 class="display-6">Get Your Stream Recommendation</h2>
+    <div class="mb-4 text-center">
+        <h2 class="display-5">Get Your Stream Recommendation</h2>
         <p class="lead">Hello, {{ user.first_name|default:user.username }}! Please provide your details below for a personalized recommendation.</p>
     </div>
 
     {# --- Recommendation Input Form --- #}
-    <form method="post" action="{% url 'dashboard' %}" class="mb-5 p-4 border rounded bg-light shadow-sm needs-validation" novalidate>
-        {% csrf_token %}
-        
-        <div class="row">
-            <div class="col-md-4 mb-3">
-                <label for="{{ form.percentage.id_for_label }}" class="form-label">{{ form.percentage.label }}</label>
-                {{ form.percentage }} 
-                {% if form.percentage.errors %}<div class="invalid-feedback d-block">{% for error in form.percentage.errors %}{{ error }}{% endfor %}</div>{% endif %}
+    <div class="recommendation-form-wrapper mb-5 p-4 border rounded bg-white shadow-lg">
+        <form method="post" action="{% url 'dashboard' %}" class="needs-validation" novalidate>
+            {% csrf_token %}
+            
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <label for="{{ form.percentage.id_for_label }}" class="form-label fw-bold">{{ form.percentage.label }}</label>
+                    {{ form.percentage }} 
+                    {% if form.percentage.errors %}<div class="invalid-feedback d-block">{% for error in form.percentage.errors %}{{ error }}{% endfor %}</div>{% endif %}
+                </div>
+                <div class="col-md-4">
+                    <label for="{{ form.activity_interest.id_for_label }}" class="form-label fw-bold">{{ form.activity_interest.label }}</label>
+                    {{ form.activity_interest }}
+                    {% if form.activity_interest.errors %}<div class="invalid-feedback d-block">{% for error in form.activity_interest.errors %}{{ error }}{% endfor %}</div>{% endif %}
+                </div>
+                <div class="col-md-4">
+                    <label for="{{ form.subject_type_preference.id_for_label }}" class="form-label fw-bold">{{ form.subject_type_preference.label }}</label>
+                    {{ form.subject_type_preference }}
+                    {% if form.subject_type_preference.errors %}<div class="invalid-feedback d-block">{% for error in form.subject_type_preference.errors %}{{ error }}{% endfor %}</div>{% endif %}
+                </div>
             </div>
-            <div class="col-md-4 mb-3">
-                <label for="{{ form.activity_interest.id_for_label }}" class="form-label">{{ form.activity_interest.label }}</label>
-                {{ form.activity_interest }}
-                {% if form.activity_interest.errors %}<div class="invalid-feedback d-block">{% for error in form.activity_interest.errors %}{{ error }}{% endfor %}</div>{% endif %}
-            </div>
-            <div class="col-md-4 mb-3">
-                <label for="{{ form.subject_type_preference.id_for_label }}" class="form-label">{{ form.subject_type_preference.label }}</label>
-                {{ form.subject_type_preference }}
-                {% if form.subject_type_preference.errors %}<div class="invalid-feedback d-block">{% for error in form.subject_type_preference.errors %}{{ error }}{% endfor %}</div>{% endif %}
-            </div>
-        </div>
 
-        <h4 class="mt-4 mb-3">Short Quiz:</h4>
-        <div class="row">
-            <div class="col-md-4 mb-3 p-3 border rounded me-md-3 flex-fill">
-                <p class="fw-bold mb-2">{{ form.quiz_q1.label }}</p>
-                {% for radio in form.quiz_q1 %}<div class="form-check">{{ radio.tag }} <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label></div>{% endfor %}
-                {% if form.quiz_q1.errors %}<div class="invalid-feedback d-block mt-2">{% for error in form.quiz_q1.errors %}{{ error }}{% endfor %}</div>{% endif %}
+            <h4 class="mt-4 mb-3 text-center border-bottom pb-2">A Quick Quiz to Understand You Better</h4>
+            <div class="row g-3">
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <div class="p-3 border rounded h-100 bg-light-subtle">
+                        <p class="fw-bold mb-2">{{ form.quiz_q1.label }}</p>
+                        {% for radio in form.quiz_q1 %}<div class="form-check">{{ radio.tag }} <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label></div>{% endfor %}
+                        {% if form.quiz_q1.errors %}<div class="invalid-feedback d-block mt-2">{% for error in form.quiz_q1.errors %}{{ error }}{% endfor %}</div>{% endif %}
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <div class="p-3 border rounded h-100 bg-light-subtle">
+                        <p class="fw-bold mb-2">{{ form.quiz_q2.label }}</p>
+                        {% for radio in form.quiz_q2 %}<div class="form-check">{{ radio.tag }} <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label></div>{% endfor %}
+                        {% if form.quiz_q2.errors %}<div class="invalid-feedback d-block mt-2">{% for error in form.quiz_q2.errors %}{{ error }}{% endfor %}</div>{% endif %}
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-12 mb-3"> {# Full width on md for last quiz if only 3 #}
+                    <div class="p-3 border rounded h-100 bg-light-subtle">
+                        <p class="fw-bold mb-2">{{ form.quiz_q3.label }}</p>
+                        {% for radio in form.quiz_q3 %}<div class="form-check">{{ radio.tag }} <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label></div>{% endfor %}
+                        {% if form.quiz_q3.errors %}<div class="invalid-feedback d-block mt-2">{% for error in form.quiz_q3.errors %}{{ error }}{% endfor %}</div>{% endif %}
+                    </div>
+                </div>
             </div>
-            <div class="col-md-4 mb-3 p-3 border rounded me-md-3 flex-fill">
-                <p class="fw-bold mb-2">{{ form.quiz_q2.label }}</p>
-                {% for radio in form.quiz_q2 %}<div class="form-check">{{ radio.tag }} <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label></div>{% endfor %}
-                {% if form.quiz_q2.errors %}<div class="invalid-feedback d-block mt-2">{% for error in form.quiz_q2.errors %}{{ error }}{% endfor %}</div>{% endif %}
+            
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger mt-3">
+                {% for error in form.non_field_errors %}<p class="mb-0">{{ error }}</p>{% endfor %}
             </div>
-            <div class="col-md-4 mb-3 p-3 border rounded flex-fill">
-                <p class="fw-bold mb-2">{{ form.quiz_q3.label }}</p>
-                {% for radio in form.quiz_q3 %}<div class="form-check">{{ radio.tag }} <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label></div>{% endfor %}
-                {% if form.quiz_q3.errors %}<div class="invalid-feedback d-block mt-2">{% for error in form.quiz_q3.errors %}{{ error }}{% endfor %}</div>{% endif %}
-            </div>
-        </div>
-        
-        {% if form.non_field_errors %}<div class="alert alert-danger mt-3">{% for error in form.non_field_errors %}<p class="mb-0">{{ error }}</p>{% endfor %}</div>{% endif %}
-        
-        <button type="submit" class="btn btn-primary w-100 mt-4 py-2">Get Recommendation</button>
-    </form>
+            {% endif %}
+            
+            <button type="submit" class="btn btn-primary btn-lg w-100 mt-4 py-2">Get My Recommendation</button>
+        </form>
+    </div>
+
 
     {# --- Display Recommendation Results --- #}
     {% if recommendation_type %} 
-        <div class="results-section mt-5 p-4 border rounded shadow-sm bg-white">
-            <h3 class="mb-3">Your Personalized Guidance</h3>
-            <div class="alert alert-info">
-                <h4 class="alert-heading">Recommendation Insights:</h4>
+        <div class="results-section mt-5 p-lg-4 p-3 border rounded shadow-sm bg-white">
+            <h3 class="mb-3 display-6 text-center border-bottom pb-2">Your Personalized Guidance</h3>
+            
+            {% if recommendation_reasoning %}
+            <div class="alert alert-info shadow-sm">
+                <h4 class="alert-heading"><i class="fas fa-lightbulb me-2"></i>Recommendation Insights:</h4>
                 <ul class="mb-0">
                     {% for reason in recommendation_reasoning %}
                     <li>{{ reason }}</li>
                     {% endfor %}
                 </ul>
             </div>
+            {% endif %}
 
             {% if recommendation_type == "NoClearRecommendation" %}
-                <div class="alert alert-warning"><h4 class="alert-heading">Further Exploration Needed</h4><p>Based on your inputs, there isn't a single standout stream. This is perfectly fine! We encourage you to look into all streams below or speak with a guidance counselor.</p></div>
+                <div class="alert alert-warning shadow-sm"><h4 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Further Exploration Needed</h4><p>Based on your inputs, there isn't a single standout stream. This is perfectly fine! It might mean your interests are diverse or you're still exploring. We encourage you to look into all streams below or speak with a guidance counselor.</p></div>
             
             {% elif recommendation_type == "MultipleSuggestions" %}
-                <div class="alert alert-primary"><h4 class="alert-heading">You have strong potential in multiple areas!</h4><p>We recommend you primarily explore <strong>{{ primary_recommendation }}</strong>, but also give strong consideration to <strong>{{ secondary_recommendation }}</strong>.</p></div>
+                <div class="alert alert-primary shadow-sm"><h4 class="alert-heading"><i class="fas fa-check-double me-2"></i>Strong Potential in Multiple Areas!</h4><p>We recommend you primarily explore <strong>{{ primary_recommendation }}</strong>, but also give strong consideration to <strong>{{ secondary_recommendation }}</strong>.</p></div>
                 
                 {% include "recommender/_stream_details_card.html" with card_title_prefix="Focus Area 1" card_stream_name=primary_recommendation card_stream_info=recommended_stream_info_primary card_stream_resources=recommended_stream_resources_primary card_entrance_exams=relevant_entrance_exams_primary %}
                 
                 {% include "recommender/_stream_details_card.html" with card_title_prefix="Focus Area 2" card_stream_name=secondary_recommendation card_stream_info=recommended_stream_info_secondary card_stream_resources=recommended_stream_resources_secondary card_entrance_exams=relevant_entrance_exams_secondary %}
 
-            {% elif recommended_stream_info %} {# Single, clear recommendation (recommendation_type will be the stream name) #}
-                <div class="alert alert-success"><h4 class="alert-heading">Primary Recommendation: {{ recommendation_type }}</h4></div>
+            {% elif recommendation_type in SPECIAL_RECOMMENDATION_TYPES %}
+                {# This should ideally not be hit if the above two handle NoClear and Multiple explicitly. #}
+                {# It's a fallback if recommendation_type is one of the special strings but wasn't caught. #}
+                <div class="alert alert-secondary shadow-sm"><p>Please review the insights and explore the streams below.</p></div>
+
+            {% elif recommended_stream_info %} {# Single, clear recommendation (recommendation_type will be a stream name) #}
+                <div class="alert alert-success shadow-sm"><h4 class="alert-heading"><i class="fas fa-star me-2"></i>Primary Recommendation: {{ recommendation_type }}</h4></div>
                 
                 {% include "recommender/_stream_details_card.html" with card_stream_name=recommendation_type card_stream_info=recommended_stream_info card_stream_resources=recommended_stream_resources card_entrance_exams=relevant_entrance_exams %}
+            
+            {% else %} 
+                {# Fallback if recommendation_type is set but no specific info block matched (e.g., if it's None after an invalid form) #}
+                {# This block might not be strictly necessary if views.py ensures recommendation_type is always one of the expected values or None #}
+                {% if request.method == "POST" %} {# Only show this specific fallback after a POST attempt #}
+                <div class="alert alert-light shadow-sm"><p>Could not determine a specific recommendation. Please check your inputs or try again.</p></div>
+                {% endif %}
             {% endif %} 
         </div> 
     {% endif %} 
 
 
     {# --- Display General Financial Aid Information --- #}
+    {# This will show if FINANCIAL_AID_INFO is in context and has items. #}
     {% if FINANCIAL_AID_INFO %} 
-    <div class="financial-aid-section mt-5 p-4 border rounded shadow-sm bg-white">
-        <h3 class="mb-3">Financial Aid & Scholarship Resources (General)</h3>
+    <div class="financial-aid-section mt-5 p-lg-4 p-3 border rounded shadow-sm bg-white">
+        <h3 class="mb-3 text-center border-bottom pb-2"><i class="fas fa-hand-holding-usd me-2"></i>Financial Aid & Scholarship Resources</h3>
         {% for category, items in FINANCIAL_AID_INFO.items %}
             <h5>{{ category }}</h5>
             <ul class="list-unstyled mb-3">
                 {% for item in items %}
-                    <li class="mb-2">
+                    <li class="mb-2 p-2 bg-light-subtle rounded">
                         <strong>{{ item.name }}:</strong> {{ item.description }}
-                        {% if item.url != "#" and item.url %}
-                            <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer" class="ms-2 small">(Learn More)</a>
+                        {% if item.url and item.url != "#" %}
+                            <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer" class="ms-2 small">(Learn More <i class="fas fa-external-link-alt fa-xs"></i>)</a>
                         {% endif %}
                     </li>
+                {% empty %}
+                    <li>No items listed in this category.</li>
                 {% endfor %}
             </ul>
+        {% empty %}
+            <p>No financial aid categories found at this time.</p>
         {% endfor %}
     </div>
     {% endif %}
 
 
-    {# --- College Search Form Section - ENTIRELY REMOVED --- #}
-    {# The <hr class="my-5"> and the <div class="college-search-section ..."> ... </div> block that was here has been deleted. #}
+    {# --- College Search Form Section - REMOVED --- #}
 
 
     {# --- "Explore Other Streams" Accordion --- #}
     {% if all_streams %}
-        <hr class="my-5"> {# This hr might now be directly after Financial Aid, or you can adjust its placement #}
-        <h3 class="mb-3">Explore Other Streams</h3>
-        <div class="accordion" id="accordionOtherStreams">
-            {% for stream_name_key, stream_data_val in all_streams.items %}
-                {% if stream_data_val.show_in_accordion %}
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="headingAccordion{{ stream_name_key|slugify }}">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAccordion{{ stream_name_key|slugify }}" aria-expanded="false" aria-controls="collapseAccordion{{ stream_name_key|slugify }}">
-                            {{ stream_name_key }}
-                        </button>
-                    </h2>
-                    <div id="collapseAccordion{{ stream_name_key|slugify }}" class="accordion-collapse collapse" aria-labelledby="headingAccordion{{ stream_name_key|slugify }}" data-bs-parent="#accordionOtherStreams">
-                        <div class="accordion-body">
-                            <p><strong>Description:</strong> {{ stream_data_val.description }}</p>
-                            <h5>Benefits:</h5><ul>{% for benefit in stream_data_val.benefits %}<li>{{ benefit }}</li>{% endfor %}</ul>
-                            <h5>Opportunities:</h5><ul>{% for opt in stream_data_val.opportunities %}<li>{{ opt }}</li>{% endfor %}</ul>
-                            <p><strong>Salary Expectation:</strong> {{ stream_data_val.salary_expectation }}</p>
-                            
-                            {% with other_stream_resources=STREAM_RESOURCES|get_item:stream_name_key %}
-                                {% if other_stream_resources %}
-                                    <h6 class="mt-3">Resources for {{stream_name_key}}:</h6>
-                                    {% for category, links in other_stream_resources.items %}
-                                        <strong>{{ category }}:</strong>
-                                        <ul class="list-unstyled mb-2">
-                                        {% for item in links %}<li><a href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.name }}</a></li>{% endfor %}
-                                        </ul>
-                                    {% endfor %}
-                                {% endif %}
-                            {% endwith %}
+        <hr class="my-5">
+        <div class="explore-streams-section mt-4 p-lg-4 p-3 border rounded shadow-sm bg-white">
+            <h3 class="mb-3 text-center border-bottom pb-2"><i class="fas fa-search-plus me-2"></i>Explore Other Streams</h3>
+            <div class="accordion" id="accordionOtherStreams">
+                {% for stream_name_key, stream_data_val in all_streams.items %}
+                    {% if stream_data_val.show_in_accordion %}
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingAccordion{{ stream_name_key|slugify }}">
+                            <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAccordion{{ stream_name_key|slugify }}" aria-expanded="false" aria-controls="collapseAccordion{{ stream_name_key|slugify }}">
+                                {{ stream_name_key }}
+                            </button>
+                        </h2>
+                        <div id="collapseAccordion{{ stream_name_key|slugify }}" class="accordion-collapse collapse" aria-labelledby="headingAccordion{{ stream_name_key|slugify }}" data-bs-parent="#accordionOtherStreams">
+                            <div class="accordion-body">
+                                <p><strong>Description:</strong> {{ stream_data_val.description }}</p>
+                                <h6>Key Benefits:</h6><ul>{% for benefit in stream_data_val.benefits %}<li>{{ benefit }}</li>{% endfor %}</ul>
+                                <h6>Common Career Opportunities:</h6>
+                                <ul style="columns: 2; -webkit-columns: 2; -moz-columns: 2; column-gap: 20px;">
+                                    {% for opt in stream_data_val.opportunities %}<li>{{ opt }}</li>{% endfor %}
+                                </ul>
+                                <p class="mt-3"><strong>General Salary Expectation:</strong> <br><small>{{ stream_data_val.salary_expectation }}</small></p>
+                                
+                                {% with other_stream_resources=STREAM_RESOURCES|get_item:stream_name_key %}
+                                    {% if other_stream_resources %}
+                                        <h6 class="mt-3 border-top pt-2">Resources for {{stream_name_key}}:</h6>
+                                        {% for category, links in other_stream_resources.items %}
+                                            <strong>{{ category }}:</strong>
+                                            <ul class="list-unstyled mb-2">
+                                            {% for item in links %}<li><a href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.name }}</a></li>{% endfor %}
+                                            </ul>
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endwith %}
+
+                                {# Also show entrance exams for other streams in accordion #}
+                                {% with other_entrance_exams=STREAM_ENTRANCE_EXAMS|get_item:stream_name_key %}
+                                    {% if other_entrance_exams %}
+                                    <h6 class="mt-3 border-top pt-2">Key Entrance Exams for {{ stream_name_key }}:</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-borderless table-hover small">
+                                           <tbody>
+                                                {% for exam in other_entrance_exams %}
+                                                <tr><td><a href="{{ exam.website }}" target="_blank" rel="noopener noreferrer">{{ exam.name }}</a> ({{ exam.for_courses }})</td></tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    {% endif %}
+                                {% endwith %}
+                            </div>
                         </div>
                     </div>
-                </div>
-                {% endif %}
-            {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            </div>
         </div>
     {% endif %}
 
 </div> {# End of main container #}
 {% endblock %}
 
-{% block scripts %}
-{# JavaScript for dynamic city dropdown - REMOVED #}
-{% endblock %}
+{% block scripts %}{% endblock %} {# Scripts block is empty as college search JS was removed #}

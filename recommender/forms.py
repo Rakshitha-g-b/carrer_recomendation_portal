@@ -3,10 +3,9 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-#from .models import State, City, StreamTag # <<< ADD THIS IMPORT LINE
+# Models for college search (State, City, StreamTag) are NOT imported
 
 class CustomUserCreationForm(UserCreationForm):
-    # ... (your existing CustomUserCreationForm code) ...
     email = forms.EmailField(
         required=True,
         help_text='Required. Please provide a valid email address.'
@@ -21,19 +20,19 @@ class CustomUserCreationForm(UserCreationForm):
         required=True,
         help_text='Required.'
     )
+
     class Meta(UserCreationForm.Meta):
         model = User
         fields = UserCreationForm.Meta.fields + ('email', 'first_name', 'last_name')
 
-
 class RecommendationInputForm(forms.Form):
-    # ... (your existing RecommendationInputForm code with percentage, interests, and quiz) ...
     percentage = forms.FloatField(
         label="Your 10th Grade Percentage (%)",
         min_value=0,
         max_value=100,
         widget=forms.NumberInput(attrs={'class': 'form-control mb-3', 'placeholder': 'e.g., 75.5'})
     )
+
     INTEREST_CHOICES_ACTIVITY = [
         ('', '---------'),
         ('problem_solving', 'Solving Puzzles / Building Things / Technical Tasks'),
@@ -47,6 +46,7 @@ class RecommendationInputForm(forms.Form):
         widget=forms.Select(attrs={'class': 'form-select mb-3'}),
         required=True
     )
+
     INTEREST_CHOICES_SUBJECT_TYPE = [
         ('', '---------'),
         ('analytical_logical', 'Analytical & Logical Subjects (Math, Physics)'),
@@ -60,6 +60,7 @@ class RecommendationInputForm(forms.Form):
         widget=forms.Select(attrs={'class': 'form-select mb-3'}),
         required=True
     )
+
     QUIZ_Q1_CHOICES = [
         ('', '---------'),
         ('q1_a', 'Break it down logically and find a systematic solution.'),
@@ -73,6 +74,7 @@ class RecommendationInputForm(forms.Form):
         widget=forms.RadioSelect,
         required=True
     )
+
     QUIZ_Q2_CHOICES = [
         ('', '---------'),
         ('q2_a', 'Innovation, technology, and discovery.'),
@@ -86,6 +88,7 @@ class RecommendationInputForm(forms.Form):
         widget=forms.RadioSelect,
         required=True
     )
+
     QUIZ_Q3_CHOICES = [
         ('', '---------'),
         ('q3_a', 'Deep research and precise calculations.'),
@@ -100,5 +103,4 @@ class RecommendationInputForm(forms.Form):
         required=True
     )
 
-
-
+# CollegeSearchForm is NOT defined here.

@@ -2,15 +2,14 @@
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse # Keep for potential future debugging
-# JsonResponse might not be needed if load_cities is removed
-# from django.http import JsonResponse
+# JsonResponse is NOT needed as load_cities is removed
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
-# Remove CollegeSearchForm from imports
+# CollegeSearchForm is removed from this import
 from .forms import CustomUserCreationForm, RecommendationInputForm
-# Remove College, City, State, StreamTag model imports
-# from .models import College, City, State, StreamTag
+# College, City, State, StreamTag models are removed from this import (ensure they are removed from models.py too)
+# from .models import College, City, State, StreamTag 
 
 # --- Stream Data ---
 STREAM_INFO = {
@@ -182,15 +181,17 @@ def dashboard_view(request):
     
     SPECIAL_RECOMMENDATION_TYPES = ["NoClearRecommendation", "MultipleSuggestions"]
     recommendation_form = RecommendationInputForm() 
-    # college_search_form = CollegeSearchForm() # REMOVED
+    # college_search_form is REMOVED
 
+    # Initialize context with all necessary data for GET requests
+    # Make a copy of STREAM_INFO to modify 'show_in_accordion' without affecting the global constant.
     processed_all_streams = {key: data.copy() for key, data in STREAM_INFO.items()}
     for stream_data_val in processed_all_streams.values():
-        stream_data_val['show_in_accordion'] = True
+        stream_data_val['show_in_accordion'] = True # Default to show
 
     context = {
         'form': recommendation_form,             
-        # 'college_search_form': college_search_form, # REMOVED
+        # 'college_search_form': None, # REMOVED from context
         'STREAM_RESOURCES': STREAM_RESOURCES,
         'all_streams': processed_all_streams, 
         'SPECIAL_RECOMMENDATION_TYPES': SPECIAL_RECOMMENDATION_TYPES,
@@ -198,12 +199,24 @@ def dashboard_view(request):
         'recommendation_reasoning': [],
         'STREAM_ENTRANCE_EXAMS': STREAM_ENTRANCE_EXAMS, 
         'FINANCIAL_AID_INFO': FINANCIAL_AID_INFO,       
+        # Initialize keys that will be set in POST if a recommendation is made
+        'relevant_entrance_exams': None,
+        'relevant_entrance_exams_primary': None,
+        'relevant_entrance_exams_secondary': None,
+        'primary_recommendation': None,
+        'secondary_recommendation': None,
+        'recommended_stream_info_primary': None,
+        'recommended_stream_resources_primary': None,
+        'recommended_stream_info_secondary': None,
+        'recommended_stream_resources_secondary': None,
+        'recommended_stream_info': None,
+        'recommended_stream_resources': None,
     }
 
     if request.method == 'POST':
         print("DEBUG: dashboard_view - POST request received for recommendation")
         recommendation_form = RecommendationInputForm(request.POST)
-        context['form'] = recommendation_form
+        context['form'] = recommendation_form # Update form in context with POST data
 
         if recommendation_form.is_valid():
             percentage = recommendation_form.cleaned_data['percentage']
@@ -220,16 +233,19 @@ def dashboard_view(request):
             print(f"Quiz Q1: {q1_ans}, Q2: {q2_ans}, Q3: {q3_ans}")
 
             stream_scores = {"Science": 0, "Commerce": 0, "Arts/Humanities": 0}
-            recommendation_reasoning = []
+            # recommendation_reasoning must be actively managed in context
+            context['recommendation_reasoning'] = [] # Reset for new recommendation
 
+            # 1. Percentage-based
             base_recommendation_perc = ""
             if percentage >= 85: stream_scores["Science"] += 2.5; base_recommendation_perc = "Science (strong)"
             elif percentage >= 75: stream_scores["Science"] += 1.5; stream_scores["Commerce"] += 1.0; base_recommendation_perc = "Science or Commerce"
             elif percentage >= 60: stream_scores["Commerce"] += 1.5; stream_scores["Science"] += 0.5; stream_scores["Arts/Humanities"] += 0.5; base_recommendation_perc = "Commerce or Arts/Science"
             elif percentage >= 45: stream_scores["Arts/Humanities"] += 1.5; stream_scores["Commerce"] += 0.5; base_recommendation_perc = "Arts or Commerce"
             else: stream_scores["Arts/Humanities"] += 2.5; base_recommendation_perc = "Arts/Humanities (strong)"
-            if percentage > 0 : recommendation_reasoning.append(f"Your percentage ({percentage}%) suggests: {base_recommendation_perc}.")
+            if percentage > 0 : context['recommendation_reasoning'].append(f"Your percentage ({percentage}%) suggests: {base_recommendation_perc}.")
 
+            # 2. Activity Interest
             activity_reason_map = {
                 'problem_solving': "Interest in problem-solving/technical tasks aligns with Science and some Commerce.",
                 'business_finance': "Interest in business/finance strongly suggests Commerce.",
@@ -240,8 +256,9 @@ def dashboard_view(request):
             elif activity == 'business_finance': stream_scores["Commerce"] += 1.5; stream_scores["Science"] += 0.2
             elif activity == 'creative_expression': stream_scores["Arts/Humanities"] += 1.5
             elif activity == 'helping_understanding': stream_scores["Arts/Humanities"] += 1.5; stream_scores["Science"] += 0.2
-            if activity in activity_reason_map: recommendation_reasoning.append(activity_reason_map[activity])
+            if activity in activity_reason_map: context['recommendation_reasoning'].append(activity_reason_map[activity])
             
+            # 3. Subject Preference
             subject_pref_reason_map = {
                 'analytical_logical': "Preference for analytical/logical subjects strengthens Science and some Commerce.",
                 'theoretical_memorization': "Preference for theoretical subjects can be found in Arts/Humanities and parts of Science.",
@@ -252,8 +269,9 @@ def dashboard_view(request):
             elif subject_pref == 'theoretical_memorization': stream_scores["Arts/Humanities"] += 1.0; stream_scores["Science"] += 0.2
             elif subject_pref == 'practical_application': stream_scores["Commerce"] += 1.0; stream_scores["Science"] += 1.0
             elif subject_pref == 'language_communication': stream_scores["Arts/Humanities"] += 1.5
-            if subject_pref in subject_pref_reason_map: recommendation_reasoning.append(subject_pref_reason_map[subject_pref])
+            if subject_pref in subject_pref_reason_map: context['recommendation_reasoning'].append(subject_pref_reason_map[subject_pref])
 
+            # 4. Quiz Scoring
             quiz_answers_map = {'q1': q1_ans, 'q2': q2_ans, 'q3': q3_ans}
             for q_num_key, ans_key in quiz_answers_map.items():
                 if ans_key and ans_key in QUIZ_SCORES.get(q_num_key, {}):
@@ -261,8 +279,9 @@ def dashboard_view(request):
                     stream_scores["Science"] += scores_for_ans.get('S', 0)
                     stream_scores["Commerce"] += scores_for_ans.get('C', 0)
                     stream_scores["Arts/Humanities"] += scores_for_ans.get('A', 0)
-            recommendation_reasoning.append("Your quiz answers have also been factored into the scores.")
+            context['recommendation_reasoning'].append("Your quiz answers have also been factored into the scores.")
 
+            # Determine recommended stream type
             recommendation_type = None 
             sorted_streams = sorted(stream_scores.items(), key=lambda item: item[1], reverse=True)
             
@@ -278,12 +297,12 @@ def dashboard_view(request):
 
             if not sorted_streams or sorted_streams[0][1] < NO_RECOMMENDATION_THRESHOLD :
                 recommendation_type = "NoClearRecommendation"
-                recommendation_reasoning.insert(0, "Your responses show a balanced mix of interests or not a strong leaning towards one particular stream. We recommend exploring all streams further or discussing with a career counselor.")
+                context['recommendation_reasoning'].insert(0, "Your responses show a balanced mix of interests or not a strong leaning towards one particular stream. We recommend exploring all streams further or discussing with a career counselor.")
             elif len(sorted_streams) > 1 and (sorted_streams[0][1] - sorted_streams[1][1] < SCORE_DIFFERENCE_THRESHOLD):
                 recommendation_type = "MultipleSuggestions"
                 primary_rec = sorted_streams[0][0]
                 secondary_rec = sorted_streams[1][0]
-                recommendation_reasoning.insert(0, f"Your preferences strongly suggest {primary_rec}, with a notable alignment with {secondary_rec}. Explore both!")
+                context['recommendation_reasoning'].insert(0, f"Your preferences strongly suggest {primary_rec}, with a notable alignment with {secondary_rec}. Explore both!")
                 context['primary_recommendation'] = primary_rec
                 context['secondary_recommendation'] = secondary_rec
                 context['recommended_stream_info_primary'] = STREAM_INFO.get(primary_rec)
@@ -303,29 +322,29 @@ def dashboard_view(request):
                      if recommendation_type in processed_all_streams:
                          processed_all_streams[recommendation_type]['show_in_accordion'] = False
                 if len(sorted_streams) > 1 and (sorted_streams[0][1] - sorted_streams[1][1] <= 2.5) and sorted_streams[1][0] != recommendation_type : 
-                     recommendation_reasoning.append(f"While {recommendation_type} is the primary suggestion, {sorted_streams[1][0]} also showed some alignment based on your responses.")
+                     context['recommendation_reasoning'].append(f"While {recommendation_type} is the primary suggestion, {sorted_streams[1][0]} also showed some alignment based on your responses.")
             
             context['recommendation_type'] = recommendation_type
-            context['recommendation_reasoning'] = recommendation_reasoning
+            # 'recommendation_reasoning' is already updated in the context through context['recommendation_reasoning'].append(...)
             context['all_streams'] = processed_all_streams 
         else: 
             print(f"DEBUG: RecommendationInputForm is invalid with errors: {recommendation_form.errors}")
             context['recommendation_type'] = None
+            context['recommendation_reasoning'] = [] # Clear reasoning if form is invalid
             
+    # Debug prints for context, just before rendering
     print(f"DEBUG: Final context keys for dashboard: {list(context.keys())}")
-    # Removed debug print for type of college_search_form as it's removed from context
     if 'recommendation_type' in context:
-        print(f"DEBUG: value of recommendation_type in context: {context.get('recommendation_type')}")
+        print(f"DEBUG CONTEXT: recommendation_type = {context.get('recommendation_type')}")
     else:
-        print("DEBUG: recommendation_type is NOT in context")
-    if 'all_streams' in context:
-        print(f"DEBUG: 'show_in_accordion' flags in context['all_streams']: {{key: val.get('show_in_accordion') for key, val in context['all_streams'].items() if isinstance(val, dict)}}")
+        print("DEBUG CONTEXT: recommendation_type is NOT in context")
+    
+    print(f"DEBUG CONTEXT: FINANCIAL_AID_INFO (exists?) = {'FINANCIAL_AID_INFO' in context and bool(context.get('FINANCIAL_AID_INFO'))}")
+    print(f"DEBUG CONTEXT: STREAM_ENTRANCE_EXAMS (exists?) = {'STREAM_ENTRANCE_EXAMS' in context and bool(context.get('STREAM_ENTRANCE_EXAMS'))}")
+    print(f"DEBUG CONTEXT: relevant_entrance_exams = {context.get('relevant_entrance_exams')}")
+    print(f"DEBUG CONTEXT: relevant_entrance_exams_primary = {context.get('relevant_entrance_exams_primary')}")
+    print(f"DEBUG CONTEXT: relevant_entrance_exams_secondary = {context.get('relevant_entrance_exams_secondary')}")
         
     return render(request, 'recommender/dashboard.html', context)
 
-# --- REMOVED College Search Views ---
-# def college_search_view(request):
-#     ...
-#
-# def load_cities(request):
-#     ...
+# --- REMOVED College Search Views (college_search_view, load_cities) ---
