@@ -2,13 +2,14 @@
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse # Keep for potential future debugging
-# JsonResponse is NOT needed as load_cities is removed
+# JsonResponse is not needed if load_cities and college search are removed
+# from django.http import JsonResponse 
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
-# CollegeSearchForm is removed from this import
+# CollegeSearchForm is removed from this import, ensure forms.py is also updated
 from .forms import CustomUserCreationForm, RecommendationInputForm
-# College, City, State, StreamTag models are removed from this import (ensure they are removed from models.py too)
+# College, City, State, StreamTag models are removed (ensure they are removed from models.py and migrations run)
 # from .models import College, City, State, StreamTag 
 
 # --- Stream Data ---
@@ -52,24 +53,47 @@ STREAM_INFO = {
             "Policy Analyst / Researcher (Social Sector)", "UX Writer / Content Strategist"
         ],
         "salary_expectation": "Highly variable. Top lawyers, successful civil servants, and established professionals in media/design can earn very well. Many roles offer immense job satisfaction and opportunities for societal impact. Salaries in some creative or social sectors might start lower but can grow with experience and reputation."
+    },
+    "Diploma Engineering (Polytechnic)": {
+        "description": "Focuses on practical and theoretical knowledge in specific engineering disciplines like Civil, Mechanical, Electrical, Computer, etc., typically a 3-year program after 10th.",
+        "benefits": ["Early entry into a technical field.","Strong emphasis on practical skills and application.","Option for lateral entry into B.Tech/B.E. degree programs (usually 2nd year).","Good for hands-on technical roles."],
+        "opportunities": [
+            "Junior Engineer (in various government and private sectors)", "Technician (Maintenance, Production, Quality Control)", "Supervisor in manufacturing/construction",
+            "Technical Assistant", "Draughtsman (Civil/Mechanical)", "Self-employment (e.g., repair services, small-scale manufacturing)", "Further studies (Lateral entry to B.Tech, AMIE)"
+        ],
+        "salary_expectation": "Entry-level salaries are typically moderate. Growth depends on skill development, experience, and further qualifications (like B.Tech after diploma)."
+    },
+    "Vocational & Skilled-Based Training (ITI, Skill India, etc.)": {
+        "description": "Focuses on acquiring specific trade skills for direct employment. Courses vary in duration (6 months to 2 years) and can be taken after 8th, 10th, or 12th depending on the trade.",
+        "benefits": ["Quickly learn job-specific skills.","High demand for skilled tradespeople.","Opportunities for self-employment and entrepreneurship.","Shorter duration and often lower cost than degree programs."],
+        "opportunities": [
+            "Electrician", "Plumber", "Welder", "Fitter", "Mechanic (Motor Vehicle, Diesel, etc.)", "Carpenter", "Computer Operator & Programming Assistant (COPA)", "Stenographer",
+            "Dress Making / Fashion Design Technology (Basic)", "Beautician / Hair Stylist", "Mobile Phone Repair Technician", "Solar Panel Installation Technician",
+            "Data Entry Operator", "Medical Lab Technician (short-term courses)", "Hospitality Assistant (F&B Service, Housekeeping - basic roles)"
+        ],
+        "salary_expectation": "Salaries vary greatly by trade, skill level, experience, and location. Skilled and experienced individuals can earn well, especially in self-employment or specialized roles."
+    },
+    "Other Specialized Diplomas & Certificates": {
+        "description": "Various short-term to medium-term diploma or certificate courses available after 10th or 12th focusing on specific job roles or skills.",
+        "benefits": ["Targeted skill development for specific industries.","Can be a stepping stone to a degree or direct employment.","Often more affordable and shorter than degree programs."],
+        "opportunities": [
+            "Diploma in Animation & Multimedia", "Diploma in Web Designing", "Diploma in Graphic Design", "Diploma in Hotel Management (entry-level roles)",
+            "Diploma in Travel & Tourism", "Certificate in Digital Marketing", "Diploma in Event Management",
+            "Paramedical Diplomas (e.g., DMLT, X-Ray Technician, Operation Theatre Technician) - often after 12th Science", "Fire and Safety Diplomas"
+        ],
+        "salary_expectation": "Dependent on the specific diploma, industry demand, and individual skills. Can lead to entry-level to mid-level positions."
     }
 }
 # --- END Stream Data --- #
 
 # --- Resource Data ---
 STREAM_RESOURCES = {
-    "Science": {
-        "General Information & Learning": [{"name": "NCERT Science Textbooks", "url": "https://ncert.nic.in/textbook.php"},{"name": "Khan Academy - Science", "url": "https://www.khanacademy.org/science"},{"name": "BYJU'S - Science Concepts", "url": "https://byjus.com/cbse/science/"},],
-        "Career Portals & Further Study": [{"name": "National Career Service (India)", "url": "https://www.ncs.gov.in/"},{"name": "Shiksha.com - Science Courses", "url": "https://www.shiksha.com/science-courses-chp"},]
-    },
-    "Commerce": {
-        "General Information & Learning": [{"name": "NCERT Commerce Textbooks", "url": "https://ncert.nic.in/textbook.php"},{"name": "Investopedia - Commerce Basics", "url": "https://www.investopedia.com/"},{"name": "Toppr - Commerce Study Material", "url": "https://www.toppr.com/guides/commerce/"},],
-        "Professional Bodies & Career Info": [{"name": "ICAI (Chartered Accountants)", "url": "https://www.icai.org/"},{"name": "ICSI (Company Secretaries)", "url": "https://www.icsi.edu/"},{"name": "CollegeDunia - B.Com Colleges", "url": "https://collegedunia.com/bcom-colleges"},]
-    },
-    "Arts/Humanities": {
-        "General Information & Learning": [{"name": "NCERT Humanities Textbooks", "url": "https://ncert.nic.in/textbook.php"},{"name": "Project Gutenberg (Literature)", "url": "https://www.gutenberg.org/"},{"name": "Coursera - Humanities Courses", "url": "https://www.coursera.org/browse/humanities"},],
-        "Career Exploration & Further Study": [{"name": "Careers360 - Arts Careers", "url": "https://www.careers360.com/careers/arts-humanities-and-social-sciences"},{"name": "IndiaToday - Career Choices in Arts", "url": "https://www.indiatoday.in/education-today/jobs-and-careers/story/career-choices-in-arts-stream-10-options-you-must-explore-after-class-12-1967099-2022-06-27"},]
-    }
+    "Science": {"General Information & Learning": [{"name": "NCERT Science Textbooks", "url": "https://ncert.nic.in/textbook.php"},{"name": "Khan Academy - Science", "url": "https://www.khanacademy.org/science"},{"name": "BYJU'S - Science Concepts", "url": "https://byjus.com/cbse/science/"},],"Career Portals & Further Study": [{"name": "National Career Service (India)", "url": "https://www.ncs.gov.in/"},{"name": "Shiksha.com - Science Courses", "url": "https://www.shiksha.com/science-courses-chp"},]},
+    "Commerce": {"General Information & Learning": [{"name": "NCERT Commerce Textbooks", "url": "https://ncert.nic.in/textbook.php"},{"name": "Investopedia - Commerce Basics", "url": "https://www.investopedia.com/"},{"name": "Toppr - Commerce Study Material", "url": "https://www.toppr.com/guides/commerce/"},],"Professional Bodies & Career Info": [{"name": "ICAI (Chartered Accountants)", "url": "https://www.icai.org/"},{"name": "ICSI (Company Secretaries)", "url": "https://www.icsi.edu/"},{"name": "CollegeDunia - B.Com Colleges", "url": "https://collegedunia.com/bcom-colleges"},]},
+    "Arts/Humanities": {"General Information & Learning": [{"name": "NCERT Humanities Textbooks", "url": "https://ncert.nic.in/textbook.php"},{"name": "Project Gutenberg (Literature)", "url": "https://www.gutenberg.org/"},{"name": "Coursera - Humanities Courses", "url": "https://www.coursera.org/browse/humanities"},],"Career Exploration & Further Study": [{"name": "Careers360 - Arts Careers", "url": "https://www.careers360.com/careers/arts-humanities-and-social-sciences"},{"name": "IndiaToday - Career Choices in Arts", "url": "https://www.indiatoday.in/education-today/jobs-and-careers/story/career-choices-in-arts-stream-10-options-you-must-explore-after-class-12-1967099-2022-06-27"},]},
+    "Diploma Engineering (Polytechnic)": {"State Boards of Technical Education": [{"name": "Search '[Your State] State Board of Technical Education'", "url": "https://www.google.com/search?q=state+board+of+technical+education"}],"General Information": [{"name": "Shiksha - Polytechnic Courses", "url": "https://www.shiksha.com/engineering/polytechnic-courses-chp"},{"name": "Careers360 - Polytechnic", "url": "https://www.careers360.com/courses/polytechnic-course"}]},
+    "Vocational & Skilled-Based Training (ITI, Skill India, etc.)": {"Government Portals": [{"name": "Skill India Portal", "url": "https://www.skillindia.gov.in/"},{"name": "NCVT MIS Portal (ITI)", "url": "https://ncvtmis.gov.in/"},{"name": "Directorate General of Training (DGT)", "url": "https://dgt.gov.in/"}],"Course Information": [{"name": "ITI Courses List", "url": "https://www.google.com/search?q=iti+courses+list+after+10th"}]},
+    "Other Specialized Diplomas & Certificates": {"Course Aggregators": [{"name": "Shiksha.com - Diploma Courses", "url": "https://www.shiksha.com/diploma-courses-chp"},{"name": "CollegeDunia - Diploma Courses", "url": "https://collegedunia.com/diploma-courses"}],"Specific Areas": [{"name": "Arena Animation (for animation/multimedia)", "url": "https://www.arena-animation.com/"},]}
 }
 # --- END Resource Data --- #
 
@@ -98,6 +122,17 @@ STREAM_ENTRANCE_EXAMS = {
         {"name": "CLAT", "for_courses": "Integrated LLB (5 years)", "eligibility": "10+2 (any stream)", "website": "https://consortiumofnlus.ac.in/", "typical_period": "December"},
         {"name": "NID DAT / UCEED", "for_courses": "Design (B.Des)", "eligibility": "10+2 (any stream)", "website": "http://admissions.nid.edu/", "typical_period": "Jan/Feb"},
         {"name": "NCHM JEE", "for_courses": "B.Sc. Hospitality", "eligibility": "10+2", "website": "https://nchmjee.nta.nic.in/", "typical_period": "May"},
+    ],
+    "Diploma Engineering (Polytechnic)": [
+        {"name": "State Polytechnic Entrance Tests (e.g., JEXPO, POLYCET, AP POLYCET, TS POLYCET, etc.)", "for_courses": "Diploma in Engineering", "eligibility": "Typically 10th Pass", "website": "Search for '[Your State] Polytechnic Entrance Exam'", "typical_period": "Varies by state (Mar-Jun)"},
+        {"name": "Direct Admission (Some Institutes)", "for_courses": "Diploma in Engineering", "eligibility": "10th Pass (merit-based)", "website": "Check specific institute websites", "typical_period": "Varies"},
+    ],
+    "Vocational & Skilled-Based Training (ITI, Skill India, etc.)": [
+        {"name": "ITI Admissions", "for_courses": "Various ITI Trades", "eligibility": "8th or 10th Pass (varies by trade)", "website": "State Directorate of Vocational Education/Training or NCVT MIS Portal", "typical_period": "Varies by state (often May-July)"},
+        {"name": "Skill India Course Enrollment", "for_courses": "Various short-term skill courses", "eligibility": "Varies by course", "website": "https://www.skillindia.gov.in/", "typical_period": "Ongoing / Varies"},
+    ],
+    "Other Specialized Diplomas & Certificates": [
+        {"name": "Institute-Specific Tests/Merit", "for_courses": "Animation, Web Design, Hotel Management Diplomas etc.", "eligibility": "Usually 10+2, some after 10th", "website": "Check specific institute websites", "typical_period": "Varies"},
     ]
 }
 # --- END Entrance Exam Data --- #
@@ -298,6 +333,7 @@ def dashboard_view(request):
             if not sorted_streams or sorted_streams[0][1] < NO_RECOMMENDATION_THRESHOLD :
                 recommendation_type = "NoClearRecommendation"
                 context['recommendation_reasoning'].insert(0, "Your responses show a balanced mix of interests or not a strong leaning towards one particular stream. We recommend exploring all streams further or discussing with a career counselor.")
+                context['recommendation_reasoning'].append("You might also want to explore options like Diploma Engineering or Vocational Training for skill-based careers.") # Suggesting alternatives
             elif len(sorted_streams) > 1 and (sorted_streams[0][1] - sorted_streams[1][1] < SCORE_DIFFERENCE_THRESHOLD):
                 recommendation_type = "MultipleSuggestions"
                 primary_rec = sorted_streams[0][0]
@@ -315,7 +351,7 @@ def dashboard_view(request):
                 context['relevant_entrance_exams_secondary'] = STREAM_ENTRANCE_EXAMS.get(secondary_rec, [])
             else:
                 recommendation_type = sorted_streams[0][0] 
-                if recommendation_type not in SPECIAL_RECOMMENDATION_TYPES:
+                if recommendation_type not in SPECIAL_RECOMMENDATION_TYPES: # Should be a stream name
                      context['recommended_stream_info'] = STREAM_INFO.get(recommendation_type)
                      context['recommended_stream_resources'] = STREAM_RESOURCES.get(recommendation_type)
                      context['relevant_entrance_exams'] = STREAM_ENTRANCE_EXAMS.get(recommendation_type, [])
@@ -325,12 +361,12 @@ def dashboard_view(request):
                      context['recommendation_reasoning'].append(f"While {recommendation_type} is the primary suggestion, {sorted_streams[1][0]} also showed some alignment based on your responses.")
             
             context['recommendation_type'] = recommendation_type
-            # 'recommendation_reasoning' is already updated in the context through context['recommendation_reasoning'].append(...)
+            # context['recommendation_reasoning'] is already populated
             context['all_streams'] = processed_all_streams 
         else: 
             print(f"DEBUG: RecommendationInputForm is invalid with errors: {recommendation_form.errors}")
             context['recommendation_type'] = None
-            context['recommendation_reasoning'] = [] # Clear reasoning if form is invalid
+            context['recommendation_reasoning'] = [] 
             
     # Debug prints for context, just before rendering
     print(f"DEBUG: Final context keys for dashboard: {list(context.keys())}")
