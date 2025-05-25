@@ -44,8 +44,8 @@ STREAM_INFO = {
         "description": "Focuses on subjects like History, Political Science, Languages, Literature, Psychology, Sociology, Fine Arts, etc. Prepares for diverse fields including civil services, law, journalism, education, creative industries, and social work.",
         "benefits": ["Develops strong critical thinking, communication, writing, and creative skills.","Provides a broad understanding of society, culture, and human behavior.","Offers diverse pathways to careers in public service, media, education, law, and the arts."],
         "opportunities": [
-            "Lawyer / Advocate", "Journalist / Reporter / Editor", "Teacher / Professor (School, College)", "Psychologist (Clinical, Counselling, Organizational)",
-            "Graphic Designer / Web Designer", "Content Writer / Copywriter", "Civil Servant (IAS, IPS, IFS, etc.)", "Archaeologist / Historian / Archivist",
+            "Civil Servant (IAS, IPS, IFS, etc.)", "Journalist / Reporter / Editor", "Teacher / Professor (School, College)", "Psychologist (Clinical, Counselling, Organizational)",
+            "Graphic Designer / Web Designer", "Content Writer / Copywriter", "Lowyer / advocate", "Archaeologist / Historian / Archivist",
             "Museum Curator / Art Conservator", "Librarian / Information Scientist", "Urban and Regional Planner", "Sociologist / Anthropologist",
             "Political Analyst / Psephologist", "Public Relations Specialist", "Social Media Manager / Digital Content Creator", "Scriptwriter (Film, TV, Web)",
             "Technical Writer", "Translator / Interpreter", "Foreign Language Expert (Diplomacy, Corporate)", "Event Manager", "Fashion Designer / Stylist",
